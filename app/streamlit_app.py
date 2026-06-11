@@ -60,11 +60,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# DATA LOADING
+# DATA LOADING & VALIDATION (NO HARDCODED FALLBACKS)
 # -----------------------------------------------------------------------------
 @st.cache_data
 def load_mortality_data():
-    return pd.read_csv('data/morality_table.csv')
+    csv_path = 'data/morality_table.csv'
+    try:
+        if not os.path.exists(csv_path):
+            st.error(f"Critical Error: The mortality dataset file was not found at `{csv_path}`.")
+            st.stop()
+            
+        df = pd.read_csv(csv_path)
+        
+        # Validate columns
+        required_cols = ['Age', 'qx']
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            st.error(f"Critical Error: The dataset is missing required columns: {missing_cols}. Provided columns: {list(df.columns)}")
+            st.stop()
+            
+        return df
+    except Exception as e:
+        st.error(f"Failed to load or parse the mortality dataset: {e}")
+        st.stop()
 
 df_mort = load_mortality_data()
 
@@ -119,8 +137,13 @@ v = 1 / (1 + i)
 # Extract baseline qx rates
 base_rates = df_mort['qx'].values
 
-# Apply mortality improvement: q_x_improved = q_x * (1 - improvement_rate)
-improved_rates = np.clip(base_rates * (1.0 - improvement_rate), 0.0, 1.0)
+# Adjust based on gender factor loaded from config
+gender_list = list(config.GENDER_FACTORS.keys())
+policyholder_gender = st.sidebar.selectbox("Gender", options=gender_list)
+gender_factor = config.GENDER_FACTORS[policyholder_gender]
+
+# Apply gender adjustment and mortality improvement: q_x_improved = q_x * gender_factor * (1 - improvement_rate)
+improved_rates = np.clip(base_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
 
 # Calculate survival probabilities tpx from starting age
 # tpx[t] is probability of surviving t years from starting age
@@ -160,7 +183,7 @@ lap_whole_val = nsp_whole_val / a_due_whole if a_due_whole > 0 else nsp_whole_va
 # -----------------------------------------------------------------------------
 st.title("📊 Actuarial Mortality Pricing Dashboard")
 st.markdown(
-    f"Simulating net premiums for a **{age}-year-old** policyholder with **₹{sum_assured:,.2f}** coverage under the **{scenario_name}** mortality scenario."
+    f"Simulating net premiums for a **{age}-year-old {policyholder_gender}** with **₹{sum_assured:,.2f}** coverage under the **{scenario_name}** mortality scenario."
 )
 
 col1, col2 = st.columns(2)
@@ -177,7 +200,7 @@ with col1:
 with col2:
     st.markdown(f"""
     <div class="premium-card">
-        <div class="card-title">♾️ Whole Life Insurance</div>
+        <div class="card-title"> Whole Life Insurance</div>
         <div class="card-value">₹{lap_whole_val:,.2f} <span style="font-size:1rem; font-weight:normal; color:#64748b;">/ Year</span></div>
         <div class="card-subtext">Net Single Premium (Lump Sum): <b>₹{nsp_whole_val:,.2f}</b></div>
     </div>
@@ -208,7 +231,7 @@ with chart_col1:
 
 with chart_col2:
     fig_mort = go.Figure()
-    # Baseline
+    # Baseline (unadjusted by gender)
     fig_mort.add_trace(go.Scatter(
         x=list(range(age, age + n)),
         y=base_rates[age:age+n],
@@ -226,7 +249,7 @@ with chart_col2:
         marker=dict(size=6)
     ))
     fig_mort.update_layout(
-        title="Mortality Probability Comparison (qx)",
+        title=f"Mortality Probability Comparison (qx) - {policyholder_gender}",
         xaxis_title="Age",
         yaxis_title="Mortality Probability (qx)",
         template="plotly_dark",

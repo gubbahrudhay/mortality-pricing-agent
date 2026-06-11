@@ -12,6 +12,12 @@ IMPROVEMENT_SCENARIOS = {
     "2.0%":       0.02,
 }
 
+# Actuarial adjustment factors
+GENDER_FACTORS = {
+    "Male": 1.05,
+    "Female": 0.85
+}
+
 # Default policy parameters
 DEFAULT_AGE  = 35
 DEFAULT_TERM = 20
