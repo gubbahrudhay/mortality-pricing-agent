@@ -39,15 +39,15 @@ mortality-pricing-agent/
 ## 🚀 Setup & Execution
 
 ### 1. Installation
-Install the required dependencies using pip:
+Install the required dependencies using pip3:
 ```bash
-pip install streamlit pandas numpy plotly python-docx matplotlib
+pip3 install streamlit pandas numpy plotly python-docx matplotlib
 ```
 
 ### 2. Run the Streamlit App
 Launch the actuarial dashboard locally:
 ```bash
-streamlit run app/streamlit_app.py
+python3 -m streamlit run app/streamlit_app.py
 ```
 
 ### 3. Run Notebooks
