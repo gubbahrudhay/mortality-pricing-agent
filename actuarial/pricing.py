@@ -1,3 +1,10 @@
+"""
+Actuarial Pricing Module
+
+This module calculates Net Single Premiums (NSP) and Net Level Annual Premiums (LAP)
+for Term Life and Whole Life products, temporary annuity due factors, and projects year-by-year expected claims NPV.
+"""
+
 import os
 import numpy as np
 import sys

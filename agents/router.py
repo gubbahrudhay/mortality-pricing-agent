@@ -1,3 +1,10 @@
+"""
+AI Agent Router
+
+This module serves as the primary entry point to invoke the Conversational Actuarial Agent,
+parsing queries, managing chat history, and returning execution outputs and traces.
+"""
+
 import os
 import sys
 

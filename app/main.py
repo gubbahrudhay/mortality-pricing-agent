@@ -1,3 +1,10 @@
+"""
+Streamlit Main Page
+
+This is the landing page for the Mortality Pricing Suite, establishing the visual theme, Outfit font,
+and navigation links to sub-pages.
+"""
+
 import streamlit as st
 import os
 import sys

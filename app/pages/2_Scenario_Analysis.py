@@ -1,3 +1,9 @@
+"""
+Streamlit Page: Scenario Analysis
+
+This page evaluates scenario comparisons and plots sensitivity curves for discount rates and mortality shocks.
+"""
+
 import streamlit as st
 import os
 import sys

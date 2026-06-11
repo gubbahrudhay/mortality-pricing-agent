@@ -1,3 +1,10 @@
+"""
+Agent Tool: Scenario Tool
+
+This module defines a LangChain tool wrapper that evaluates and compares life premiums
+across different mortality improvement scenarios (0%, 0.5%, 1%, 2%).
+"""
+
 import os
 import sys
 from langchain_core.tools import tool

@@ -1,3 +1,10 @@
+"""
+Agent Tool: Sensitivity Tool
+
+This module defines a LangChain tool wrapper that evaluates premium sensitivity to changes in
+either interest/discount rates or mortality multiplier shocks.
+"""
+
 import os
 import sys
 from langchain_core.tools import tool

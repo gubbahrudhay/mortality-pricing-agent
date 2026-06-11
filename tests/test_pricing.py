@@ -1,3 +1,10 @@
+"""
+Unit Tests: Actuarial Pricing
+
+This module executes pytest tests validating raw table loading, discount factors, improved mortality rates,
+survival probabilities, and premium calculations.
+"""
+
 import os
 import sys
 import pytest

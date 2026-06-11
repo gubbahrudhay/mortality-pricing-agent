@@ -1,3 +1,10 @@
+"""
+Actuarial Scenarios Module
+
+This module evaluates and compares premium rates and total cumulative savings across baseline
+and multiple mortality improvement scenarios (e.g. 0%, 0.5%, 1.0%, 2.0%).
+"""
+
 import os
 import pandas as pd
 import sys

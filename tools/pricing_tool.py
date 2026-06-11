@@ -1,3 +1,10 @@
+"""
+Agent Tool: Pricing Tool
+
+This module defines a LangChain tool wrapper around the core actuarial pricing calculations,
+returning a formatted summary of Term and Whole Life premiums for a given client scenario.
+"""
+
 import os
 import sys
 from langchain_core.tools import tool

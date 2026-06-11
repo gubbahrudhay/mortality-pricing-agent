@@ -1,3 +1,10 @@
+"""
+Analytics Insights Module
+
+This module produces automated natural language actuarial insights, explaining premium rates,
+NPV claims, interest rate elasticity, and mortality risk sensitivity.
+"""
+
 import pandas as pd
 import numpy as np
 

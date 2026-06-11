@@ -1,3 +1,10 @@
+"""
+Streamlit Page: Pricing Calculator
+
+This page renders the core interactive pricing calculator, detailing premium card metrics,
+survival curves, mortality comparisons, and claims projection tables.
+"""
+
 import streamlit as st
 import os
 import sys

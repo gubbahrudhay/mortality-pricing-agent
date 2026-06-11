@@ -1,3 +1,9 @@
+"""
+Streamlit UI Table Component
+
+This module provides helper components to display formatted dataframes and projection tables.
+"""
+
 import streamlit as st
 import pandas as pd
 import os

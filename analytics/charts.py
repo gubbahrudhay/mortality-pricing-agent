@@ -1,3 +1,10 @@
+"""
+Analytics Charts Module
+
+This module generates reusable Plotly figure objects for survival curves, mortality comparisons,
+interest rate sensitivities, mortality shocks, and scenario comparisons.
+"""
+
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd

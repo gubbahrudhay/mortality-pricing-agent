@@ -1,3 +1,9 @@
+"""
+Streamlit UI Chart Component
+
+This module houses wrappers to render Plotly chart objects inside Streamlit columns.
+"""
+
 import streamlit as st
 import os
 import sys

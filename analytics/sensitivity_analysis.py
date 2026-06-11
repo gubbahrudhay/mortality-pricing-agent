@@ -1,3 +1,10 @@
+"""
+Analytics Sensitivity Analysis Module
+
+This module simulates premium reactions and risk metrics over ranges of interest/discount rates
+and mortality multiplier shocks (underwriting risk).
+"""
+
 import os
 import numpy as np
 import pandas as pd

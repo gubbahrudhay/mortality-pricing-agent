@@ -1,3 +1,10 @@
+"""
+Agent Tool: Explanation Tool
+
+This module defines a LangChain tool wrapper that compiles a comprehensive, structured markdown report
+summarizing premium quotes, actuarial explanations, and expected claims projections.
+"""
+
 import os
 import sys
 from langchain_core.tools import tool

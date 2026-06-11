@@ -1,3 +1,10 @@
+"""
+Streamlit UI Input Component
+
+This module renders reusable policy parameters (age, term, sum assured, discount, gender, scenario)
+in the Streamlit sidebar control panel.
+"""
+
 import streamlit as st
 import os
 import sys

@@ -1,3 +1,10 @@
+"""
+Actuarial Mortality Module
+
+This module handles loading the raw mortality table data, adjusting rates based on gender factors,
+and computing compound annual mortality improvement projections and survival probability curves.
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -59,31 +66,7 @@ def get_survival_probabilities(improved_rates, age, term):
         
     return tpx
 
-def export_improvement_table(df_mort, gender_factors=None, scenarios=None, output_path="data/processed/mortality_improvement_table.csv"):
-    """
-    Generates a consolidated table comparing qx rates for Males/Females across all configured scenarios.
-    """
-    if gender_factors is None:
-        gender_factors = config.GENDER_FACTORS
-    if scenarios is None:
-        scenarios = config.IMPROVEMENT_SCENARIOS
-        
-    result_df = pd.DataFrame({'Age': df_mort['Age']})
-    
-    for gender in gender_factors.keys():
-        for scenario_name, improvement_rate in scenarios.items():
-            col_name = f"{gender}_{scenario_name.replace(' ', '_').replace('(', '').replace(')', '')}"
-            improved_rates = get_improved_mortality_rates(df_mort, gender, improvement_rate, gender_factors)
-            result_df[col_name] = improved_rates
-            
-    # Ensure parent directory exists
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    result_df.to_csv(output_path, index=False)
-    return result_df
-
 if __name__ == "__main__":
     # Test execution
     df = load_raw_table()
-    print(f"Loaded {len(df)} rows from raw table.")
-    processed_df = export_improvement_table(df)
-    print(f"Exported processed improvement table to data/processed/mortality_improvement_table.csv")
+    print(f"Loaded {len(df)} rows from raw table successfully.")

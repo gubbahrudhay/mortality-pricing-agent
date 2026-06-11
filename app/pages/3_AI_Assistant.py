@@ -1,3 +1,9 @@
+"""
+Streamlit Page: AI Assistant
+
+This page integrates the LangChain conversational agent, displaying chat history and dynamic tool execution logs.
+"""
+
 import streamlit as st
 import os
 import sys

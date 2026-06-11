@@ -1,3 +1,10 @@
+"""
+AI Pricing Agent Configuration
+
+This module configures the ChatGoogleGenerativeAI (Gemini) LLM agent, binding custom actuarial tools
+and setting up conversational prompts and memory structures.
+"""
+
 import os
 import sys
 from dotenv import load_dotenv

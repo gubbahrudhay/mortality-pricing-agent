@@ -17,9 +17,6 @@ mortality-pricing-agent/
 │   ├── raw/
 │   │   └── mortality_table.csv   # Baseline life table (qx rates)
 │   │
-│   ├── processed/
-│   │   └── mortality_improvement_table.csv  # Pre-computed scenario qx outputs
-│   │
 │   └── sample_inputs/
 │       └── pricing_scenarios.json # Saved scenario inputs
 │

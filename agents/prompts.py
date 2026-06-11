@@ -1,3 +1,10 @@
+"""
+AI Pricing Agent Prompts
+
+This module defines system instructions and persona guidelines for the Actuarial Agent,
+ensuring precise, professional, and actuarially sound outputs.
+"""
+
 # System instructions for the Actuarial Agent
 SYSTEM_PROMPT = """You are a professional Senior Actuarial Consultant and AI Pricing Assistant.
 Your goal is to help users (actuaries, product managers, and underwriters) analyze life insurance premium rates, evaluate sensitivity, and model mortality improvement scenarios.

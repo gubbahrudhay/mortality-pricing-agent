@@ -1,3 +1,10 @@
+"""
+Actuarial Utilities Module
+
+This module provides common utilities such as currency and percentage formatting helpers,
+and batch loading pricing scenarios from JSON files.
+"""
+
 import os
 import json
 import sys

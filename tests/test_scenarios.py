@@ -1,3 +1,10 @@
+"""
+Unit Tests: Scenarios & Sensitivity
+
+This module executes pytest tests validating scenario comparison calculations, interest rate sensitivity,
+and mortality multiplier shock sensitivity.
+"""
+
 import os
 import sys
 import pytest
