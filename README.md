@@ -1,65 +1,111 @@
-# 📊 Mortality Pricing Agent & Actuarial Dashboard
+# 📊 AI-Powered Mortality Improvement Pricing & Sensitivity Analyzer
 
-An interactive actuarial pricing and sensitivity analysis engine utilizing centralized assumptions in `config.py` and the life table in `data/morality_table.csv`.
-
-## 📁 Repository Structure
-```
-mortality-pricing-agent/
-│
-├── data/
-│   └── morality_table.csv        # Baseline life table (qx rates)
-│
-├── notebooks/
-│   ├── pricing_engine.ipynb      # Actuarial math, NSP, and LAP validation
-│   ├── sensitivity_analysis.ipynb# Interest rate & mortality shock simulations
-│   └── chatbot.ipynb             # AI agent / LLM integration workspace
-│
-├── app/
-│   └── streamlit_app.py          # Interactive Streamlit pricing dashboard
-│
-├── docs/
-│   └── final_report.docx         # Actuarial summary report
-│
-├── config.py                     # Centralized assumptions (rates, scenarios, ages)
-└── README.md                     # Setup and documentation guide
-```
+An interactive actuarial pricing and sensitivity analysis engine utilizing centralized assumptions, compound mortality improvement scenarios, premium risk shock analysis, and an integrated LangChain Conversational AI Agent.
 
 ---
 
-## 🛠️ Features Completed
-1. **Centralized Configuration (`config.py`)**: All defaults (6% base interest rate, ₹10,00,000 sum assured, entry age, term limits) and mortality improvement scenarios (0%, 0.5%, 1.0%, 2.0%) are configured in one file.
-2. **Interactive Streamlit Dashboard**: 
-    *   Computes **Net Single Premiums (NSP)** and **Net Level Annual Premiums (LAP)** for both **Term Life** and **Whole Life** products dynamically.
-    *   Imports and adjusts calculations based on configuration parameters.
-    *   Embeds interactive Plotly charts showing survival probabilities ($tpx$) and comparisons of baseline vs. improved mortality rates ($qx$).
-3. **Actuarial Notebooks**: Fully implemented and updated to pull inputs from `config.py` and evaluate premium sensitivity mathematically.
+## 📁 Modular Directory Structure
+```text
+mortality-pricing-agent/
+│
+├── README.md                     # This documentation guide
+├── requirements.txt              # Project library dependencies
+├── .env.example                  # Environment key placeholders
+├── .gitignore                    # Version control ignore rules
+│
+├── data/
+│   ├── raw/
+│   │   └── mortality_table.csv   # Baseline life table (qx rates)
+│   │
+│   ├── processed/
+│   │   └── mortality_improvement_table.csv  # Pre-computed scenario qx outputs
+│   │
+│   └── sample_inputs/
+│       └── pricing_scenarios.json # Saved scenario inputs
+│
+├── actuarial/
+│   ├── mortality.py              # Life table loading & improvement projections
+│   ├── pricing.py                # NSP, LAP and NPV claim cash flow calculators
+│   ├── scenarios.py              # Multi-scenario premium comparisons
+│   └── utils.py                  # Currency formatters & utilities
+│
+├── analytics/
+│   ├── sensitivity_analysis.py   # Discount rate & multiplier shock simulations
+│   ├── charts.py                 # Plotly curve visualizations
+│   └── insights.py               # Data-driven text summary generators
+│
+├── tools/
+│   ├── pricing_tool.py           # Tool wrapper for simple pricing calls
+│   ├── scenario_tool.py          # Tool wrapper for scenario comparisons
+│   ├── sensitivity_tool.py       # Tool wrapper for sensitivity curves
+│   └── explanation_tool.py       # Tool wrapper for structured reports
+│
+├── agents/
+│   ├── pricing_agent.py          # LangChain conversational tools agent config
+│   ├── prompts.py                # System instructions & actuarial persona
+│   └── router.py                 # Agent invocation entry point
+│
+├── app/
+│   ├── main.py                   # Main landing page for Streamlit Dashboard
+│   │
+│   ├── components/
+│   │   ├── charts.py             # Reusable streamlit plotting helpers
+│   │   ├── inputs.py             # Sidebar parameter panels
+│   │   └── tables.py             # Renderers for structured dataframes
+│   │
+│   └── pages/
+│       ├── 1_Pricing_Calculator.py  # Page 1: Metric cards, survival curves, qx comparison
+│       ├── 2_Scenario_Analysis.py   # Page 2: Scenario tables & sensitivity curves
+│       └── 3_AI_Assistant.py        # Page 3: Conversational assistant with tool trace logging
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_pricing_engine.ipynb
+│   ├── 03_sensitivity_analysis.ipynb
+│   └── 04_agent_testing.ipynb
+│
+├── tests/
+│   ├── test_pricing.py           # Unit tests for core actuarial models
+│   ├── test_scenarios.py         # Unit tests for scenario comparisons
+│   └── test_agent.py             # Unit tests for tool calling executions
+│
+└── deployment/
+    ├── streamlit_config.toml     # Streamlit theme preferences
+    └── deploy.md                 # Deployment & Hosting guide
+```
 
 ---
 
 ## 🚀 Setup & Execution
 
-### 1. Installation
-Install the required dependencies using pip3:
+### 1. Installation & Environment Configuration
+Ensure you have the virtual environment configured and activated. Copy `.env.example` to `.env` and set your `GEMINI_API_KEY`:
 ```bash
-pip3 install streamlit pandas numpy plotly python-docx matplotlib
+# Clone/Open workspace
+cd mortality-pricing-agent
+
+# Create & configure .env
+cp .env.example .env
+# Open .env and write GEMINI_API_KEY="..."
+
+# Install dependencies in the active virtual environment
+.venv/bin/pip install -r requirements.txt
 ```
 
-### 2. Run the Streamlit App
-Launch the actuarial dashboard locally:
+### 2. Run the Multi-Page Streamlit App
+Launch the interactive dashboard locally:
 ```bash
-python3 -m streamlit run app/streamlit_app.py
+.venv/bin/streamlit run app/main.py
 ```
 
-### 3. Run Notebooks
-You can inspect or run the calculations step-by-step using Jupyter:
+### 3. Run Automated Tests
+Execute the unit testing suite to verify premium calculations, sensitivities, and tool executions:
 ```bash
-jupyter notebook notebooks/pricing_engine.ipynb
+.venv/bin/pytest tests/
 ```
 
----
-
-## 📅 Build Plan Status & Next Steps
-*   **[x] Day 1-2**: Project setup, loading `morality_table.csv`, and writing `config.py` (Complete).
-*   **[x] Day 3-9**: Pricing calculations, mortality improvement scenarios, and sensitivity plots (Complete).
-*   **[x] Day 10-11**: Core interactive dashboard and Plotly chart embedding (Complete).
-*   **[ ] Day 12-13**: Developing the LangChain/Gemini AI Agent tool and integrating the Chatbot tab back into the Streamlit UI (Next).
+### 4. Interactive Notebooks
+You can inspect or run the calculations step-by-step using Jupyter (registered under the `mortality-pricing-agent` kernel):
+```bash
+jupyter notebook notebooks/02_pricing_engine.ipynb
+```
