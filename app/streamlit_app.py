@@ -6,13 +6,15 @@ import sys
 import os
 
 # -----------------------------------------------------------------------------
-# IMPORT CONFIGURATION
+# IMPORT CONFIGURATION & ENGINES
 # -----------------------------------------------------------------------------
 try:
     import config
+    from engine.pricing import calculate_pricing
 except ImportError:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     import config
+    from engine.pricing import calculate_pricing
 
 # -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & THEME
@@ -67,7 +69,7 @@ def load_mortality_data():
     csv_path = 'data/morality_table.csv'
     try:
         if not os.path.exists(csv_path):
-            st.error(f"Critical Error: The mortality dataset file was not found at `{csv_path}`.")
+            st.error(f"❌ Critical Error: The mortality dataset file was not found at `{csv_path}`.")
             st.stop()
             
         df = pd.read_csv(csv_path)
@@ -76,12 +78,12 @@ def load_mortality_data():
         required_cols = ['Age', 'qx']
         missing_cols = [col for col in required_cols if col not in df.columns]
         if missing_cols:
-            st.error(f"Critical Error: The dataset is missing required columns: {missing_cols}. Provided columns: {list(df.columns)}")
+            st.error(f"❌ Critical Error: The dataset is missing required columns: {missing_cols}. Provided columns: {list(df.columns)}")
             st.stop()
             
         return df
     except Exception as e:
-        st.error(f"Failed to load or parse the mortality dataset: {e}")
+        st.error(f"❌ Failed to load or parse the mortality dataset: {e}")
         st.stop()
 
 df_mort = load_mortality_data()
@@ -121,6 +123,10 @@ interest_rate = st.sidebar.slider(
     step=0.25
 )
 
+# Select gender from config options
+gender_list = list(config.GENDER_FACTORS.keys())
+policyholder_gender = st.sidebar.selectbox("Gender", options=gender_list)
+
 # Select mortality improvement scenario from config
 scenario_name = st.sidebar.selectbox(
     "Mortality Improvement Scenario",
@@ -129,54 +135,18 @@ scenario_name = st.sidebar.selectbox(
 improvement_rate = config.IMPROVEMENT_SCENARIOS[scenario_name]
 
 # -----------------------------------------------------------------------------
-# PRICING ENGINE
+# CALL MODULAR PRICING ENGINE
 # -----------------------------------------------------------------------------
-i = interest_rate / 100.0
-v = 1 / (1 + i)
-
-# Extract baseline qx rates
-base_rates = df_mort['qx'].values
-
-# Adjust based on gender factor loaded from config
-gender_list = list(config.GENDER_FACTORS.keys())
-policyholder_gender = st.sidebar.selectbox("Gender", options=gender_list)
-gender_factor = config.GENDER_FACTORS[policyholder_gender]
-
-# Apply gender adjustment and mortality improvement: q_x_improved = q_x * gender_factor * (1 - improvement_rate)
-improved_rates = np.clip(base_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
-
-# Calculate survival probabilities tpx from starting age
-# tpx[t] is probability of surviving t years from starting age
-max_periods = len(df_mort) - age
-tpx = np.zeros(max_periods)
-tpx[0] = 1.0
-for t in range(1, max_periods):
-    tpx[t] = tpx[t-1] * (1.0 - improved_rates[age + t - 1])
-
-# Calculate Term Life net single premium (NSP)
-n = min(term, max_periods - 1)
-nsp_term = 0.0
-for t in range(n):
-    nsp_term += (v ** (t + 1)) * tpx[t] * improved_rates[age + t]
-nsp_term_val = nsp_term * sum_assured
-
-# Calculate Whole Life net single premium (NSP)
-nsp_whole = 0.0
-for t in range(max_periods - 1):
-    nsp_whole += (v ** (t + 1)) * tpx[t] * improved_rates[age + t]
-nsp_whole_val = nsp_whole * sum_assured
-
-# Calculate temporary life annuity due factor (for Term LAP conversion)
-a_due_term = 0.0
-for t in range(n):
-    a_due_term += (v ** t) * tpx[t]
-lap_term_val = nsp_term_val / a_due_term if a_due_term > 0 else nsp_term_val
-
-# Calculate whole life annuity due factor (for Whole Life LAP conversion)
-a_due_whole = 0.0
-for t in range(max_periods - 1):
-    a_due_whole += (v ** t) * tpx[t]
-lap_whole_val = nsp_whole_val / a_due_whole if a_due_whole > 0 else nsp_whole_val
+res = calculate_pricing(
+    age=age,
+    gender=policyholder_gender,
+    term=term,
+    sum_assured=sum_assured,
+    interest_rate=interest_rate,
+    improvement_rate=improvement_rate,
+    df_mort=df_mort,
+    gender_factors=config.GENDER_FACTORS
+)
 
 # -----------------------------------------------------------------------------
 # MAIN APP VIEW
@@ -191,18 +161,18 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown(f"""
     <div class="premium-card">
-        <div class="card-title">🛡️ Term Life Insurance ({n}-Year Term)</div>
-        <div class="card-value">₹{lap_term_val:,.2f} <span style="font-size:1rem; font-weight:normal; color:#64748b;">/ Year</span></div>
-        <div class="card-subtext">Net Single Premium (Lump Sum): <b>₹{nsp_term_val:,.2f}</b></div>
+        <div class="card-title">🛡️ Term Life Insurance ({term}-Year Term)</div>
+        <div class="card-value">₹{res['lap_term']:,.2f} <span style="font-size:1rem; font-weight:normal; color:#64748b;">/ Year</span></div>
+        <div class="card-subtext">Net Single Premium (Lump Sum): <b>₹{res['nsp_term']:,.2f}</b></div>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown(f"""
     <div class="premium-card">
-        <div class="card-title"> Whole Life Insurance</div>
-        <div class="card-value">₹{lap_whole_val:,.2f} <span style="font-size:1rem; font-weight:normal; color:#64748b;">/ Year</span></div>
-        <div class="card-subtext">Net Single Premium (Lump Sum): <b>₹{nsp_whole_val:,.2f}</b></div>
+        <div class="card-title">♾️ Whole Life Insurance</div>
+        <div class="card-value">₹{res['lap_whole']:,.2f} <span style="font-size:1rem; font-weight:normal; color:#64748b;">/ Year</span></div>
+        <div class="card-subtext">Net Single Premium (Lump Sum): <b>₹{res['nsp_whole']:,.2f}</b></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -212,15 +182,15 @@ chart_col1, chart_col2 = st.columns(2)
 with chart_col1:
     fig_surv = go.Figure()
     fig_surv.add_trace(go.Scatter(
-        x=list(range(age, age + n + 1)),
-        y=tpx[:n+1],
+        x=res['ages_axis'],
+        y=res['tpx'],
         mode='lines+markers',
         name='Survival Probability',
         line=dict(color='#0ea5e9', width=3),
         marker=dict(size=6)
     ))
     fig_surv.update_layout(
-        title=f"Survival Probability Curve over the Policy Term ({n} Years)",
+        title=f"Survival Probability Curve over the Policy Term ({term} Years)",
         xaxis_title="Age",
         yaxis_title="Survival Probability (tpx)",
         template="plotly_dark",
@@ -233,16 +203,16 @@ with chart_col2:
     fig_mort = go.Figure()
     # Baseline (unadjusted by gender)
     fig_mort.add_trace(go.Scatter(
-        x=list(range(age, age + n)),
-        y=base_rates[age:age+n],
+        x=res['ages_axis'][:-1],
+        y=res['base_rates'],
         mode='lines',
         name='Baseline Mortality (qx)',
         line=dict(color='#64748b', width=2, dash='dash')
     ))
     # Improved/Adjusted
     fig_mort.add_trace(go.Scatter(
-        x=list(range(age, age + n)),
-        y=improved_rates[age:age+n],
+        x=res['ages_axis'][:-1],
+        y=res['improved_rates'],
         mode='lines+markers',
         name='Scenario Mortality (qx)',
         line=dict(color='#f43f5e', width=3),
