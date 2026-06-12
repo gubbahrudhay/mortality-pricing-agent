@@ -1,7 +1,7 @@
 """
 Streamlit UI Input Component
 
-This module renders reusable policy parameters (age, term, sum assured, discount, gender, scenario)
+This module renders reusable policy parameters (age, term, sum assured, discount, scenario)
 in the Streamlit sidebar control panel.
 """
 
@@ -49,9 +49,6 @@ def render_sidebar_inputs():
         step=0.25
     )
     
-    gender_list = list(config.GENDER_FACTORS.keys())
-    gender = st.sidebar.selectbox("Gender", options=gender_list)
-    
     scenario_list = list(config.IMPROVEMENT_SCENARIOS.keys())
     scenario_name = st.sidebar.selectbox("Mortality Improvement Scenario", options=scenario_list)
     improvement_rate = config.IMPROVEMENT_SCENARIOS[scenario_name]
@@ -61,7 +58,6 @@ def render_sidebar_inputs():
         "term": term,
         "sum_assured": sum_assured,
         "interest_rate": interest_rate,
-        "gender": gender,
         "scenario_name": scenario_name,
         "improvement_rate": improvement_rate
     }

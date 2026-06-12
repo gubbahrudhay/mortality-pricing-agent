@@ -7,6 +7,7 @@ summarizing premium quotes, actuarial explanations, and expected claims projecti
 
 import os
 import sys
+# pyrefly: ignore [missing-import]
 from langchain_core.tools import tool
 
 # Add parent directory to path to support config/pricing imports
@@ -18,7 +19,7 @@ from analytics.sensitivity_analysis import analyze_interest_rate_sensitivity, an
 from actuarial.utils import format_currency
 
 @tool
-def explanation_tool(age: int, gender: str, term: int, sum_assured: float, interest_rate: float, improvement_rate: float) -> str:
+def explanation_tool(age: int, term: int, sum_assured: float, interest_rate: float, improvement_rate: float) -> str:
     """
     Generates a structured, text-based actuarial explanation report summarizing 
     premiums, NPV expected claims, and key risk sensitivity insights.
@@ -26,7 +27,6 @@ def explanation_tool(age: int, gender: str, term: int, sum_assured: float, inter
     
     Inputs:
       - age (int): Entry age of policyholder
-      - gender (str): 'Male' or 'Female'
       - term (int): Policy term in years
       - sum_assured (float): The total claim payout value
       - interest_rate (float): The discount rate in percentage
@@ -41,7 +41,6 @@ def explanation_tool(age: int, gender: str, term: int, sum_assured: float, inter
         # Calculate pricing
         pricing = calculate_all_pricing(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate,
@@ -52,7 +51,6 @@ def explanation_tool(age: int, gender: str, term: int, sum_assured: float, inter
         # Calculate sensitivities for insights
         int_sensitivity = analyze_interest_rate_sensitivity(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             improvement_rate=improvement_rate,
@@ -61,7 +59,6 @@ def explanation_tool(age: int, gender: str, term: int, sum_assured: float, inter
         
         shock_sensitivity = analyze_mortality_shock_sensitivity(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate,
@@ -77,7 +74,6 @@ def explanation_tool(age: int, gender: str, term: int, sum_assured: float, inter
             f"# ACTUARIAL PRICING & RISK ANALYSIS REPORT\n\n"
             f"**Policyholder Details:**\n"
             f"- Entry Age: {age}\n"
-            f"- Gender: {gender}\n"
             f"- Policy Term: {term} Years\n"
             f"- Sum Assured: {format_currency(sum_assured)}\n\n"
             f"**Economic & Mortality Assumptions:**\n"

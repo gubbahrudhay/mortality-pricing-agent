@@ -18,7 +18,6 @@ def generate_pricing_insights(pricing_results):
     nsp_whole = pricing_results['nsp_whole']
     age = pricing_results['age']
     term = pricing_results['term']
-    gender = pricing_results['gender']
     sum_assured = pricing_results['sum_assured']
     interest_rate = pricing_results['interest_rate']
     improvement_rate = pricing_results['improvement_rate']
@@ -28,7 +27,7 @@ def generate_pricing_insights(pricing_results):
     # Insight 1: Premium structures comparison
     ratio = (lap_term / sum_assured) * 1000.0
     insights.append(
-        f"For a **{age}-year-old {gender}**, the Term Life annual premium rate is **{ratio:.2f} per 1,000** of sum assured, "
+        f"For a **{age}-year-old**, the Term Life annual premium rate is **{ratio:.2f} per 1,000** of sum assured, "
         f"resulting in an annual level premium of **₹{lap_term:,.2f}** for **{term} years** of coverage."
     )
     

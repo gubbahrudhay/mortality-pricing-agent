@@ -48,7 +48,6 @@ st.markdown("Evaluates premium rates and cumulative savings across baseline and 
 
 df_compare = get_scenarios_comparison_df(
     age=inputs['age'],
-    gender=inputs['gender'],
     term=inputs['term'],
     sum_assured=inputs['sum_assured'],
     interest_rate_pct=inputs['interest_rate'],
@@ -73,7 +72,6 @@ st.markdown("Model how premiums react to shifts in interest rates (macroeconomic
 # Perform analyses
 int_sensitivity = analyze_interest_rate_sensitivity(
     age=inputs['age'],
-    gender=inputs['gender'],
     term=inputs['term'],
     sum_assured=inputs['sum_assured'],
     improvement_rate=inputs['improvement_rate'],
@@ -82,7 +80,6 @@ int_sensitivity = analyze_interest_rate_sensitivity(
 
 shock_sensitivity = analyze_mortality_shock_sensitivity(
     age=inputs['age'],
-    gender=inputs['gender'],
     term=inputs['term'],
     sum_assured=inputs['sum_assured'],
     interest_rate_pct=inputs['interest_rate'],

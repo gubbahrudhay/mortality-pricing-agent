@@ -21,7 +21,6 @@ def test_compare_scenarios():
     df = load_raw_table()
     results = compare_scenarios(
         age=35,
-        gender='Male',
         term=20,
         sum_assured=1000000,
         interest_rate_pct=6.0,
@@ -42,7 +41,6 @@ def test_interest_sensitivity():
     df = load_raw_table()
     res = analyze_interest_rate_sensitivity(
         age=35,
-        gender='Male',
         term=20,
         sum_assured=1000000,
         improvement_rate=0.01,
@@ -57,7 +55,6 @@ def test_mortality_shock():
     df = load_raw_table()
     res = analyze_mortality_shock_sensitivity(
         age=35,
-        gender='Male',
         term=20,
         sum_assured=1000000,
         interest_rate_pct=6.0,

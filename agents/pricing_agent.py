@@ -42,9 +42,9 @@ def get_pricing_agent(temperature=0.2, gemini_api_key=None):
             "in your .env file or environment variables."
         )
         
-    # Set model to gemini-1.5-flash
+    # Set model to gemini-2.5-flash
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         google_api_key=api_key,
         temperature=temperature
     )

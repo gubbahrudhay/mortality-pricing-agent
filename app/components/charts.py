@@ -22,8 +22,8 @@ def render_survival_curve(ages, tpx, term):
     fig = build_survival_curve_chart(ages, tpx, term)
     st.plotly_chart(fig, use_container_width=True)
 
-def render_mortality_rate_comparison(ages, base_rates, improved_rates, gender):
-    fig = build_mortality_rate_chart(ages, base_rates, improved_rates, gender)
+def render_mortality_rate_comparison(ages, base_rates, improved_rates):
+    fig = build_mortality_rate_chart(ages, base_rates, improved_rates)
     st.plotly_chart(fig, use_container_width=True)
 
 def render_interest_sensitivity(sensitivity_data):

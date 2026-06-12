@@ -31,14 +31,38 @@ def test_discount_factor():
 
 def test_improved_mortality_rates():
     df = load_raw_table()
-    gender = 'Male'
     improvement_rate = 0.01
     
-    improved_rates = get_improved_mortality_rates(df, gender, improvement_rate, config.GENDER_FACTORS)
+    improved_rates = get_improved_mortality_rates(df, improvement_rate)
     base_rate = df['qx'].values[35]
-    expected_improved_rate = base_rate * config.GENDER_FACTORS[gender] * (1.0 - improvement_rate)
+    expected_improved_rate = base_rate * (1.0 - improvement_rate)
     
     assert abs(improved_rates[35] - expected_improved_rate) < 1e-6
+
+def test_compounded_mortality_rates():
+    df = load_raw_table()
+    improvement_rate = 0.01
+    entry_age = 35
+    
+    improved_rates = get_improved_mortality_rates(df, improvement_rate, entry_age=entry_age)
+    
+    # Age 35 is index 33 (since Age starts at 2)
+    # Exponent for Age 35 is: 35 - 35 + 1 = 1
+    base_rate_35 = df['qx'].values[33]
+    expected_rate_35 = base_rate_35 * (1.0 - improvement_rate) ** 1
+    assert abs(improved_rates[33] - expected_rate_35) < 1e-6
+    
+    # Age 37 is index 35
+    # Exponent for Age 37 is: 37 - 35 + 1 = 3
+    base_rate_37 = df['qx'].values[35]
+    expected_rate_37 = base_rate_37 * (1.0 - improvement_rate) ** 3
+    assert abs(improved_rates[35] - expected_rate_37) < 1e-6
+    
+    # Age 34 is index 32
+    # Since Age 34 < entry_age (35), exponent should be 0
+    base_rate_34 = df['qx'].values[32]
+    expected_rate_34 = base_rate_34 * (1.0 - improvement_rate) ** 0
+    assert abs(improved_rates[32] - expected_rate_34) < 1e-6
 
 def test_survival_probabilities():
     # Constant qx = 0.1 for testing
@@ -56,7 +80,6 @@ def test_pricing_calculations():
     df = load_raw_table()
     res = calculate_all_pricing(
         age=35,
-        gender='Male',
         term=20,
         sum_assured=1000000,
         interest_rate_pct=6.0,

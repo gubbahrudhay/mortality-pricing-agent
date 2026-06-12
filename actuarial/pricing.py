@@ -109,15 +109,12 @@ def project_expected_claims(age, term, sum_assured, interest_rate_pct, improved_
         
     return projections
 
-def calculate_all_pricing(age, gender, term, sum_assured, interest_rate_pct, improvement_rate, df_mort, gender_factors=None):
+def calculate_all_pricing(age, term, sum_assured, interest_rate_pct, improvement_rate, df_mort):
     """
     Convenience function to perform all pricing calculations.
     """
-    if gender_factors is None:
-        gender_factors = config.GENDER_FACTORS
-        
     # Get improved rates for term life and whole life
-    improved_rates = get_improved_mortality_rates(df_mort, gender, improvement_rate, gender_factors)
+    improved_rates = get_improved_mortality_rates(df_mort, improvement_rate, entry_age=age)
     
     # Survival probability arrays
     tpx_term = get_survival_probabilities(improved_rates, age, term)
@@ -144,7 +141,6 @@ def calculate_all_pricing(age, gender, term, sum_assured, interest_rate_pct, imp
     
     return {
         'age': age,
-        'gender': gender,
         'term': term,
         'sum_assured': sum_assured,
         'interest_rate': interest_rate_pct,

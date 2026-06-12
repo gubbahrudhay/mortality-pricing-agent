@@ -1,8 +1,7 @@
 """
 Actuarial Mortality Module
 
-This module handles loading the raw mortality table data, adjusting rates based on gender factors,
-and computing compound annual mortality improvement projections and survival probability curves.
+This module handles loading the raw mortality table data and computing compound annual mortality improvement projections and survival probability curves.
 """
 
 import os
@@ -34,19 +33,22 @@ def load_raw_table(csv_path="data/raw/mortality_table.csv"):
         
     return df
 
-def get_improved_mortality_rates(df_mort, gender, improvement_rate, gender_factors=None):
+def get_improved_mortality_rates(df_mort, improvement_rate, entry_age=None):
     """
-    Applies gender factor and annual compound mortality improvement to baseline qx rates.
-    qx_improved = qx_base * gender_factor * (1 - improvement_rate)
+    Applies annual compound mortality improvement to baseline qx rates.
+    qx_improved = qx_base * (1 - improvement_rate)^n
+    where n is the policy year (Age - entry_age + 1) if entry_age is provided, else 1.
     """
-    if gender_factors is None:
-        gender_factors = config.GENDER_FACTORS
-        
     base_rates = df_mort['qx'].values
-    gender_factor = gender_factors.get(gender, 1.0)
+    
+    # Define the exponent n: policy year based on entry_age
+    if entry_age is not None:
+        n = np.maximum(df_mort['Age'].values - entry_age + 1, 0)
+    else:
+        n = 1
     
     # Apply improvement rate (compound reduction in mortality rates)
-    improved_rates = np.clip(base_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
+    improved_rates = np.clip(base_rates * ((1.0 - improvement_rate) ** n), 0.0, 1.0)
     return improved_rates
 
 def get_survival_probabilities(improved_rates, age, term):

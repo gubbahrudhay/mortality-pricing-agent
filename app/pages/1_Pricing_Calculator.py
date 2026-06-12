@@ -76,13 +76,11 @@ inputs = render_sidebar_inputs()
 # -----------------------------------------------------------------------------
 res = calculate_all_pricing(
     age=inputs['age'],
-    gender=inputs['gender'],
     term=inputs['term'],
     sum_assured=inputs['sum_assured'],
     interest_rate_pct=inputs['interest_rate'],
     improvement_rate=inputs['improvement_rate'],
-    df_mort=df_mort,
-    gender_factors=config.GENDER_FACTORS
+    df_mort=df_mort
 )
 
 # -----------------------------------------------------------------------------
@@ -90,7 +88,7 @@ res = calculate_all_pricing(
 # -----------------------------------------------------------------------------
 st.title("🛡️ Actuarial Life Insurance Pricing Calculator")
 st.markdown(
-    f"Simulating net premiums for a **{inputs['age']}-year-old {inputs['gender']}** with **{format_currency(inputs['sum_assured'])}** coverage under the **{inputs['scenario_name']}** mortality scenario."
+    f"Simulating net premiums for a **{inputs['age']}-year-old** with **{format_currency(inputs['sum_assured'])}** coverage under the **{inputs['scenario_name']}** mortality scenario."
 )
 
 st.markdown("---")
@@ -122,7 +120,7 @@ with chart_col1:
     render_survival_curve(res['ages_axis'], res['tpx'], inputs['term'])
 
 with chart_col2:
-    render_mortality_rate_comparison(res['ages_axis'][:-1], res['base_rates'], res['improved_rates'], inputs['gender'])
+    render_mortality_rate_comparison(res['ages_axis'][:-1], res['base_rates'], res['improved_rates'])
 
 # Expected Claims Projection
 st.subheader("🔮 Expected Claims Projections (First 10 Years)")
