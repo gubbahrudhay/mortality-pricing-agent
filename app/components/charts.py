@@ -20,20 +20,20 @@ from analytics.charts import (
 
 def render_survival_curve(ages, tpx, term):
     fig = build_survival_curve_chart(ages, tpx, term)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 def render_mortality_rate_comparison(ages, base_rates, improved_rates, gender):
     fig = build_mortality_rate_chart(ages, base_rates, improved_rates, gender)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 def render_interest_sensitivity(sensitivity_data):
     fig = build_interest_rate_sensitivity_chart(sensitivity_data)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 def render_mortality_shock_sensitivity(sensitivity_data):
     fig = build_mortality_shock_chart(sensitivity_data)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 def render_scenario_comparison(comparison_data):
     fig = build_scenario_comparison_chart(comparison_data)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")

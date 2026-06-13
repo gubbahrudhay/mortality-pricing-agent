@@ -36,7 +36,7 @@ def render_scenario_table(df_comparison):
         'Term Savings (%)', 'Whole NSP', 'Whole Annual Premium (LAP)', 'Whole Savings (Abs)', 'Whole Savings (%)'
     ]
     
-    st.dataframe(df_display, use_container_width=True, hide_index=True)
+    st.dataframe(df_display, width="stretch", hide_index=True)
 
 def render_claims_projection_table(projections):
     """
@@ -53,4 +53,4 @@ def render_claims_projection_table(projections):
     df_display['Expected Claims Amount'] = df['Expected_Claim_Amount'].apply(lambda x: format_currency(x))
     df_display['Present Value (PV) of Claims'] = df['PV_Expected_Claim'].apply(lambda x: format_currency(x))
     
-    st.dataframe(df_display, use_container_width=True, hide_index=True)
+    st.dataframe(df_display, width="stretch", hide_index=True)

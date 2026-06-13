@@ -81,7 +81,7 @@ sample_prompts = [
 ]
 
 for prompt in sample_prompts:
-    if st.sidebar.button(prompt, use_container_width=True):
+    if st.sidebar.button(prompt, width="stretch"):
         # Programmatically set session query
         st.session_state.prompt_query = prompt
 
