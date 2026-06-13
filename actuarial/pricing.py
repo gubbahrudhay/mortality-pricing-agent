@@ -3,6 +3,9 @@ Actuarial Pricing Module
 
 This module calculates Net Single Premiums (NSP) and Net Level Annual Premiums (LAP)
 for Term Life and Whole Life products, temporary annuity due factors, and projects year-by-year expected claims NPV.
+
+Death benefits are assumed payable at the MID-POINT of the policy year (v^(t+0.5)),
+while premiums are payable at the START of the policy year (v^t, annuity-due).
 """
 
 import os
@@ -36,7 +39,9 @@ def calculate_annuity_due_factor(tpx, interest_rate_pct):
 def calculate_nsp_term(age, term, sum_assured, interest_rate_pct, improved_rates, tpx):
     """
     Computes Net Single Premium for Term Life Insurance:
-    NSP = sum_{t=0}^{n-1} v^(t+1) * tpx * q_{x+t} * Sum Assured
+    NSP = sum_{t=0}^{n-1} v^(t+0.5) * tpx * q_{x+t} * Sum Assured
+
+    Death benefit is discounted assuming payment at the mid-point of the policy year.
     """
     v = calculate_discount_factor(interest_rate_pct)
     max_periods = len(improved_rates) - age
@@ -44,7 +49,7 @@ def calculate_nsp_term(age, term, sum_assured, interest_rate_pct, improved_rates
     
     nsp_factor = 0.0
     for t in range(n):
-        nsp_factor += (v ** (t + 1)) * tpx[t] * improved_rates[age + t]
+        nsp_factor += (v ** (t + 0.5)) * tpx[t] * improved_rates[age + t]
         
     return nsp_factor * sum_assured
 
@@ -59,14 +64,16 @@ def calculate_lap_term(nsp_term, annuity_due_factor):
 def calculate_nsp_whole(age, sum_assured, interest_rate_pct, improved_rates, tpx_whole):
     """
     Computes Net Single Premium for Whole Life Insurance:
-    NSP = sum_{t=0}^{max-1} v^(t+1) * tpx * q_{x+t} * Sum Assured
+    NSP = sum_{t=0}^{max-1} v^(t+0.5) * tpx * q_{x+t} * Sum Assured
+
+    Death benefit is discounted assuming payment at the mid-point of the policy year.
     """
     v = calculate_discount_factor(interest_rate_pct)
     max_periods = len(improved_rates) - age
     
     nsp_factor = 0.0
     for t in range(max_periods - 1):
-        nsp_factor += (v ** (t + 1)) * tpx_whole[t] * improved_rates[age + t]
+        nsp_factor += (v ** (t + 0.5)) * tpx_whole[t] * improved_rates[age + t]
         
     return nsp_factor * sum_assured
 
@@ -83,7 +90,9 @@ def project_expected_claims(age, term, sum_assured, interest_rate_pct, improved_
     Projects expected claim cash flows and their present value year-by-year.
     For each year t (from 0 to term-1), the probability of dying is tpx * q_{x+t}.
     Expected Claim in Year t+1 = tpx * q_{x+t} * Sum Assured
-    PV of Expected Claim in Year t+1 = v^(t+1) * tpx * q_{x+t} * Sum Assured
+    PV of Expected Claim = v^(t+0.5) * tpx * q_{x+t} * Sum Assured
+
+    Death benefit is discounted assuming payment at the mid-point of the policy year.
     """
     v = calculate_discount_factor(interest_rate_pct)
     max_periods = len(improved_rates) - age
@@ -94,7 +103,7 @@ def project_expected_claims(age, term, sum_assured, interest_rate_pct, improved_
         qx_t = improved_rates[age + t]
         prob_death = tpx[t] * qx_t
         expected_claim = prob_death * sum_assured
-        pv_factor = v ** (t + 1)
+        pv_factor = v ** (t + 0.5)
         pv_expected_claim = expected_claim * pv_factor
         
         projections.append({

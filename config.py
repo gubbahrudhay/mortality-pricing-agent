@@ -14,7 +14,7 @@ IMPROVEMENT_SCENARIOS = {
 
 # Actuarial adjustment factors
 GENDER_FACTORS = {
-    "Male": 1.05,
+    "Male": 1.00,
     "Female": 0.85
 }
 

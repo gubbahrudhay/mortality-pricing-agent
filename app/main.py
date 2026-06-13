@@ -1,165 +1,108 @@
 """
 Streamlit Main Page
 
-This is the landing page for the Mortality Pricing Suite, establishing the visual theme, Outfit font,
-and navigation links to sub-pages.
+Landing page for the Mortality Pricing Suite — QDT-inspired: dark halftone
+hero, light intro band, dark indexed feature cards.
 """
 
 import streamlit as st
 import os
 import sys
 
-# -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & THEME
-# -----------------------------------------------------------------------------
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.theme import inject_theme
+
 st.set_page_config(
     page_title="Mortality Improvement Analyzer",
     page_icon="🧬",
     layout="wide"
 )
 
-# Custom premium styling
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-    html, body, [class*="css"] {
-        font-family: 'Outfit', sans-serif;
-    }
-    .hero-container {
-        background: linear-gradient(135deg, #1e1e38 0%, #0f0f1b 100%);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        padding: 40px;
-        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
-        margin-bottom: 30px;
-    }
-    .hero-title {
-        font-size: 2.8rem;
-        font-weight: 700;
-        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 15px;
-    }
-    .hero-subtitle {
-        font-size: 1.25rem;
-        color: #94a3b8;
-        margin-bottom: 25px;
-        line-height: 1.6;
-    }
-    .feature-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 24px;
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-    .feature-card:hover {
-        transform: translateY(-5px);
-        border-color: #6366f1;
-        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
-    }
-    .feature-icon {
-        font-size: 2.2rem;
-        margin-bottom: 15px;
-    }
-    .feature-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #f8fafc;
-        margin-bottom: 10px;
-    }
-    .feature-text {
-        font-size: 0.95rem;
-        color: #94a3b8;
-        line-height: 1.5;
-    }
-</style>
-""", unsafe_allow_html=True)
+inject_theme()
 
 # -----------------------------------------------------------------------------
-# HERO SECTION
+# DARK HALFTONE HERO
 # -----------------------------------------------------------------------------
 st.markdown("""
-<div class="hero-container">
-    <div class="hero-title">📊 Mortality Improvement Pricing & Sensitivity Analyzer</div>
-    <div class="hero-subtitle">
-        An advanced, modular actuarial pricing suite integrated with an AI Consultant. This system simulates Net Single 
-        and Net Level Annual premiums, computes survival probability matrices, models sensitivity to economic and mortality shocks, 
-        and provides natural language explanations.
+<div class="hero-dark">
+    <div class="hero-dark-content">
+        <div class="hero-dark-title">Mortality Improvement Pricing &amp; Sensitivity Analyzer</div>
+        <div class="hero-dark-sub">Actuarial pricing, powered by AI</div>
     </div>
-    <p style="color: #64748b; font-size: 0.9rem;">
-        👈 <b>Get Started:</b> Use the sidebar on the left to navigate through the calculator, scenario dashboards, or the conversational AI assistant.
-    </p>
 </div>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# PAGES OVERVIEW
+# LIGHT INTRO BAND
 # -----------------------------------------------------------------------------
-st.subheader("💡 Application Features")
+st.markdown("""
+<div class="hero-light">
+    <div class="hero-light-title">An advanced, modular actuarial pricing suite integrated with an AI consultant</div>
+    <div class="hero-light-desc">
+        Simulate Net Single and Net Level Annual premiums, compute survival probability matrices,
+        model sensitivity to economic and mortality shocks, and get natural-language explanations
+        for every result.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# FEATURE CARDS (dark, dotted pattern)
+# -----------------------------------------------------------------------------
+st.markdown('<div class="section-tag">Application Features</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">Explore the pricing, scenario, and AI assistant tools</div>', unsafe_allow_html=True)
+
+st.write("")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">🛡️</div>
-        <div class="feature-title">Pricing Calculator</div>
-        <div class="feature-text">
-            Compute Net Single Premiums (NSP) and Net Level Annual Premiums (LAP) dynamically for Term Life and Whole Life products. 
-            Interactive Plotly charts render survival probabilities (tpx) and comparative mortality rates (qx).
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.page_link(
+        "pages/1_Pricing_Calculator.py",
+        label="**Pricing Calculator**\n\nCompute Net Single Premiums (NSP) and Net Level Annual Premiums (LAP) for Term Life and Whole Life products, with interactive survival and mortality charts."
+    )
 
 with col2:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">📈</div>
-        <div class="feature-title">Scenario & Sensitivity Analysis</div>
-        <div class="feature-text">
-            Evaluate premium reactions to mortality improvement scenarios (0%, 0.5%, 1%, 2%). Simulate sensitivity 
-            under discount rate fluctuations and custom mortality shocks, generating risk elasticities.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.page_link(
+        "pages/2_Scenario_Analysis.py",
+        label="**Scenario & Sensitivity**\n\nEvaluate premium reactions to mortality improvement scenarios and simulate sensitivity under discount rate and mortality shocks."
+    )
 
 with col3:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">💬</div>
-        <div class="feature-title">AI Actuarial Assistant</div>
-        <div class="feature-text">
-            Chat with a conversational agent integrated with Gemini and LangChain. The agent utilizes custom actuarial 
-            tools to calculate premiums, run scenarios, perform sensitivity analyses, and compile formal reports.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.page_link(
+        "pages/3_AI_Assistant.py",
+        label="**AI Actuarial Assistant**\n\nChat with a conversational agent that calculates premiums, runs scenarios, performs sensitivity analyses, and compiles formal reports."
+    )
 
 # -----------------------------------------------------------------------------
-# TEAM ALLOCATION & ARCHITECTURE
+# ARCHITECTURE & TEAM
 # -----------------------------------------------------------------------------
-st.markdown("---")
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
 arch_col, team_col = st.columns([3, 2])
 
 with arch_col:
-    st.subheader("⚙️ System Architecture")
+    st.markdown('<div class="glass-label">System Architecture</div>', unsafe_allow_html=True)
     st.markdown("""
-    This project is built using a clean, decoupled modular directory structure:
-    - **`data/`**: Structured raw inputs (mortality tables) and processed outputs.
-    - **`actuarial/`**: Encapsulates core life table mathematics, pricing formulas, and scenario algorithms.
-    - **`analytics/`**: Runs sensitivity matrices, risk elasticity analyses, and builds plotly charts.
-    - **`tools/`**: Implements custom LangChain tools that bind the actuarial logic directly to the LLM agent.
-    - **`agents/`**: Configures the ChatGoogleGenerativeAI (Gemini) agent, conversational memory, and routing.
-    - **`app/`**: Builds the premium user interface using multi-page Streamlit dashboards.
-    """)
+    <div class="arch-block">
+    <p style="font-size:0.95rem; line-height:1.9; margin-top:12px;">
+    <code>data/</code> &mdash; structured raw inputs (mortality tables) and processed outputs.<br>
+    <code>actuarial/</code> &mdash; core life table mathematics, pricing formulas, and scenario algorithms.<br>
+    <code>analytics/</code> &mdash; sensitivity matrices, risk elasticity analyses, and chart builders.<br>
+    <code>tools/</code> &mdash; custom LangChain tools binding actuarial logic to the LLM agent.<br>
+    <code>agents/</code> &mdash; Gemini agent configuration, conversational memory, and routing.<br>
+    <code>app/</code> &mdash; multi-page Streamlit UI.
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with team_col:
-    st.subheader("👥 Project Team")
+    st.markdown('<div class="glass-label">Project Team</div>', unsafe_allow_html=True)
     st.markdown("""
-    - **AI Assistant / Agent (You)**: Handles conversational AI, tool calling, and report generation.
-    - **Teammate 2 (Actuarial)**: Designed life table formulas, compound improvement projections, and premium calculations.
-    - **Teammate 3 (Analytics)**: Engineered sensitivity engines, Plotly visualizations, and data-driven insights.
-    """)
+    <div class="team-block">
+    <p style="font-size:0.95rem; line-height:1.9; margin-top:12px;">
+    <strong>AI Assistant / Agent</strong> &mdash; conversational AI, tool calling, and report generation.<br><br>
+    <strong>Teammate 2 (Actuarial)</strong> &mdash; life table formulas, compound improvement projections, premium calculations.<br><br>
+    <strong>Teammate 3 (Analytics)</strong> &mdash; sensitivity engines, visualizations, data-driven insights.
+    </p>
+    </div>
+    """, unsafe_allow_html=True)

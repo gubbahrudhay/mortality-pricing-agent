@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 from agents.router import invoke_pricing_agent
 from dotenv import load_dotenv
+from app.theme import inject_theme
 
 # Load env variables
 load_dotenv()
@@ -26,13 +27,27 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("💬 AI Actuarial Assistant")
+inject_theme()
+
+# -----------------------------------------------------------------------------
+# HEADER
+# -----------------------------------------------------------------------------
+st.markdown("""
+<div class="hero-dark" style="padding: 40px 50px;">
+    <div class="hero-dark-content">
+        <div class="hero-dark-title" style="font-size: 1.7rem;">💬 AI Actuarial Assistant</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 st.markdown(
+    "<p style='color:#6b7280; font-size:0.95rem; margin-top:18px;'>"
     "Engage with an intelligent agent that leverages custom actuarial tools to run pricing calculations, "
-    "compare scenarios, evaluate sensitivity curves, and generate comprehensive actuarial reports."
+    "compare scenarios, evaluate sensitivity curves, and generate comprehensive actuarial reports.</p>",
+    unsafe_allow_html=True
 )
 
-st.markdown("---")
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # API KEY MANAGEMENT (SIDEBAR)
@@ -109,7 +124,7 @@ if user_query:
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
         st.markdown(user_query)
-        
+
     # Check if API key is present
     if not api_key_to_use:
         with st.chat_message("assistant"):
@@ -120,34 +135,29 @@ if user_query:
         # Generate assistant response
         with st.chat_message("assistant"):
             with st.spinner("AI Consulting Agent is thinking and executing tools..."):
-                # Call agent
-                # Construct langchain history list
-                # (For simplicity in routing, we pass raw chat history list, and router maps it)
                 response = invoke_pricing_agent(
                     query=user_query,
                     chat_history=st.session_state.chat_history,
                     gemini_api_key=api_key_to_use
                 )
-                
+
                 # Render tool executions/intermediate steps
                 steps = response.get('intermediate_steps', [])
                 if steps:
                     with st.expander("🛠️ Tool Executions & Actuarial reasoning trace", expanded=True):
-                        for action, observation in steps:
-                            st.markdown(f"**Action Called:** `{action.tool}`")
-                            st.markdown(f"**Arguments:** `{action.tool_input}`")
+                        for tool_name, tool_args, observation in steps:
+                            st.markdown(f"**Action Called:** `{tool_name}`")
+                            st.markdown(f"**Arguments:** `{tool_args}`")
                             st.text_area("Result:", value=str(observation), height=150)
                             st.markdown("---")
-                            
+
                 # Display final output
                 final_output = response.get('output', 'No response.')
                 st.markdown(final_output)
-                
+
                 # Save message
                 st.session_state.messages.append({"role": "assistant", "content": final_output})
-                
+
                 # Update agent conversational memory
-                # Format: langchain expects BaseMessage objects, or we can use list of tuples
-                # We save raw tuples for next invocation
                 st.session_state.chat_history.append(("human", user_query))
                 st.session_state.chat_history.append(("ai", final_output))

@@ -1,9 +1,7 @@
 """
 Streamlit Page: Scenario Analysis
-
 This page evaluates scenario comparisons and plots sensitivity curves for discount rates and mortality shocks.
 """
-
 import streamlit as st
 import os
 import sys
@@ -19,6 +17,7 @@ from app.components.inputs import render_sidebar_inputs
 from app.components.charts import render_scenario_comparison, render_interest_sensitivity, render_mortality_shock_sensitivity
 from app.components.tables import render_scenario_table
 from analytics.insights import generate_sensitivity_insights
+from app.theme import inject_theme
 
 # -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & STYLING
@@ -29,22 +28,44 @@ st.set_page_config(
     layout="wide"
 )
 
+inject_theme()
+
 # Load raw mortality table
 df_mort = load_raw_table()
 
 # Render inputs in sidebar
 inputs = render_sidebar_inputs()
 
-st.title("📈 Scenario & Sensitivity Analysis Dashboard")
-st.markdown("Compare premium rates under multiple mortality improvement scenarios and evaluate policy sensitivity to economic and underwriting risk factors.")
+# -----------------------------------------------------------------------------
+# HEADER
+# -----------------------------------------------------------------------------
+st.markdown("""
+<div class="hero-dark" style="padding: 40px 50px;">
+    <div class="hero-dark-content">
+        <div class="hero-dark-title" style="font-size: 1.7rem;">📈 Scenario &amp; Sensitivity Analysis Dashboard</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown(
+    "<p style='color:#6b7280; font-size:0.95rem; margin-top:18px;'>"
+    "Compare premium rates under multiple mortality improvement scenarios and evaluate policy "
+    "sensitivity to economic and underwriting risk factors.</p>",
+    unsafe_allow_html=True
+)
+
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # SCENARIO COMPARISON SECTION
 # -----------------------------------------------------------------------------
-st.subheader("🧬 Mortality Improvement Scenarios")
-st.markdown("Evaluates premium rates and cumulative savings across baseline and improved mortality models.")
+st.markdown('<div class="section-tag">Scenario Comparison</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title" style="font-size:1.4rem; text-align:left;">Mortality Improvement Scenarios</div>', unsafe_allow_html=True)
+st.markdown(
+    "<p style='color:#6b7280; font-size:0.9rem; margin-bottom:20px;'>"
+    "Evaluates premium rates and cumulative savings across baseline and improved mortality models.</p>",
+    unsafe_allow_html=True
+)
 
 df_compare = get_scenarios_comparison_df(
     age=inputs['age'],
@@ -66,9 +87,15 @@ with col2:
 # -----------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS SECTION
 # -----------------------------------------------------------------------------
-st.markdown("---")
-st.subheader("⚡ Sensitivity & Risk Elasticity Curves")
-st.markdown("Model how premiums react to shifts in interest rates (macroeconomic variable) and mortality shocks (underwriting risk variable).")
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
+st.markdown('<div class="section-tag">Risk Elasticity</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title" style="font-size:1.4rem; text-align:left;">Sensitivity &amp; Risk Elasticity Curves</div>', unsafe_allow_html=True)
+st.markdown(
+    "<p style='color:#6b7280; font-size:0.9rem; margin-bottom:20px;'>"
+    "Model how premiums react to shifts in interest rates (macroeconomic variable) and mortality "
+    "shocks (underwriting risk variable).</p>",
+    unsafe_allow_html=True
+)
 
 # Perform analyses
 int_sensitivity = analyze_interest_rate_sensitivity(
@@ -97,9 +124,13 @@ with chart_col1:
 with chart_col2:
     render_mortality_shock_sensitivity(shock_sensitivity)
 
-# Display Analytics Insights
-st.subheader("💡 Premium Elasticity Insights")
-insights = generate_sensitivity_insights(int_sensitivity, shock_sensitivity)
+# -----------------------------------------------------------------------------
+# INSIGHTS
+# -----------------------------------------------------------------------------
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
+st.markdown('<div class="glass-label">Premium Elasticity Insights</div>', unsafe_allow_html=True)
+st.write("")
 
+insights = generate_sensitivity_insights(int_sensitivity, shock_sensitivity)
 for insight in insights:
     st.info(insight)

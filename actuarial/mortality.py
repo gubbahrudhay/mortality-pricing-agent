@@ -14,6 +14,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
+
 def load_raw_table(csv_path="data/raw/mortality_table.csv"):
     """
     Loads the baseline mortality table from the specified CSV path.
@@ -25,29 +26,45 @@ def load_raw_table(csv_path="data/raw/mortality_table.csv"):
             csv_path = resolved_path
         else:
             raise FileNotFoundError(f"Mortality table file not found at {csv_path}")
-    
+
     df = pd.read_csv(csv_path)
-    
+
     # Ensure correct columns
     if 'Age' not in df.columns or 'qx' not in df.columns:
         raise ValueError("Mortality table must contain 'Age' and 'qx' columns.")
-        
+
     return df
+
 
 def get_improved_mortality_rates(df_mort, gender, improvement_rate, gender_factors=None):
     """
     Applies gender factor and annual compound mortality improvement to baseline qx rates.
     qx_improved = qx_base * gender_factor * (1 - improvement_rate)
+
+    Builds a full age-indexed array (index = actual age) so that improved_rates[age]
+    correctly corresponds to that age, regardless of which starting age the source
+    CSV begins at.
     """
     if gender_factors is None:
         gender_factors = config.GENDER_FACTORS
-        
-    base_rates = df_mort['qx'].values
+
+    ages = df_mort['Age'].values
+    base_qx = df_mort['qx'].values
+
+    # Build a full array indexed 0..max_age by actual age
+    max_age = int(ages.max())
+    full_rates = np.zeros(max_age + 1)
+    for a, q in zip(ages, base_qx):
+        full_rates[int(a)] = q
+
+    # Fill ages below the table's minimum (e.g. 0, 1) with the smallest available rate
+    min_age = int(ages.min())
+    full_rates[:min_age] = base_qx[0]
+
     gender_factor = gender_factors.get(gender, 1.0)
-    
-    # Apply improvement rate (compound reduction in mortality rates)
-    improved_rates = np.clip(base_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
+    improved_rates = np.clip(full_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
     return improved_rates
+
 
 def get_survival_probabilities(improved_rates, age, term):
     """
@@ -57,14 +74,15 @@ def get_survival_probabilities(improved_rates, age, term):
     """
     max_periods = len(improved_rates) - age
     n = min(term, max_periods - 1)
-    
+
     tpx = np.zeros(n + 1)
-    tpx[0] = 1.0 # Probability of surviving 0 years is 1.0
-    
+    tpx[0] = 1.0  # Probability of surviving 0 years is 1.0
+
     for t in range(1, n + 1):
-        tpx[t] = tpx[t-1] * (1.0 - improved_rates[age + t - 1])
-        
+        tpx[t] = tpx[t - 1] * (1.0 - improved_rates[age + t - 1])
+
     return tpx
+
 
 if __name__ == "__main__":
     # Test execution
