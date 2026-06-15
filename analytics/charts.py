@@ -32,7 +32,7 @@ def build_survival_curve_chart(ages, tpx, term, theme="plotly_dark"):
     )
     return fig
 
-def build_mortality_rate_chart(ages, base_rates, improved_rates, gender, theme="plotly_dark"):
+def build_mortality_rate_chart(ages, base_rates, improved_rates, theme="plotly_dark"):
     """
     Plots baseline vs improved mortality rate comparison (qx).
     """
@@ -53,7 +53,7 @@ def build_mortality_rate_chart(ages, base_rates, improved_rates, gender, theme="
         marker=dict(size=6)
     ))
     fig.update_layout(
-        title=f"Mortality Probability Comparison (qx) - {gender}",
+        title="Mortality Probability Comparison (qx)",
         xaxis_title="Age",
         yaxis_title="Mortality Probability (qx)",
         template=theme,

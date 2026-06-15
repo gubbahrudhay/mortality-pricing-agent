@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 from actuarial.pricing import calculate_all_pricing
 
-def analyze_interest_rate_sensitivity(age, gender, term, sum_assured, improvement_rate, df_mort, rate_range=None):
+def analyze_interest_rate_sensitivity(age, term, sum_assured, improvement_rate, df_mort, rate_range=None):
     """
     Computes Term and Whole Life premiums for a range of interest/discount rates.
     """
@@ -27,7 +27,6 @@ def analyze_interest_rate_sensitivity(age, gender, term, sum_assured, improvemen
     for rate in rate_range:
         pricing = calculate_all_pricing(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=rate,
@@ -45,7 +44,7 @@ def analyze_interest_rate_sensitivity(age, gender, term, sum_assured, improvemen
         
     return results
 
-def analyze_mortality_shock_sensitivity(age, gender, term, sum_assured, interest_rate_pct, df_mort, shock_range=None):
+def analyze_mortality_shock_sensitivity(age, term, sum_assured, interest_rate_pct, df_mort, shock_range=None):
     """
     Computes Term and Whole Life premiums under various mortality shocks (multipliers).
     A shock multiplier of 1.2 means qx is increased by 20% (worse mortality).
@@ -60,7 +59,6 @@ def analyze_mortality_shock_sensitivity(age, gender, term, sum_assured, interest
         improvement_rate = 1.0 - shock
         pricing = calculate_all_pricing(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate_pct,

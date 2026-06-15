@@ -7,6 +7,7 @@ either interest/discount rates or mortality multiplier shocks.
 
 import os
 import sys
+# pyrefly: ignore [missing-import]
 from langchain_core.tools import tool
 
 # Add parent directory to path to support config/pricing imports
@@ -16,14 +17,13 @@ from analytics.sensitivity_analysis import analyze_interest_rate_sensitivity, an
 from actuarial.utils import format_currency
 
 @tool
-def sensitivity_tool(age: int, gender: str, term: int, sum_assured: float, interest_rate: float, improvement_rate: float, sensitivity_type: str) -> str:
+def sensitivity_tool(age: int, term: int, sum_assured: float, interest_rate: float, improvement_rate: float, sensitivity_type: str) -> str:
     """
     Evaluates premium sensitivity to changes in either the interest rate or mortality multiplier shocks.
     Useful when answering sensitivity questions like 'What happens if interest rates change?' or 'How do mortality shocks affect premiums?'.
     
     Inputs:
       - age (int): Entry age of policyholder
-      - gender (str): 'Male' or 'Female'
       - term (int): Policy term in years
       - sum_assured (float): The total claim payout value
       - interest_rate (float): The base discount rate in percentage (e.g. 6.0)
@@ -39,7 +39,6 @@ def sensitivity_tool(age: int, gender: str, term: int, sum_assured: float, inter
         if sensitivity_type.lower() == 'interest':
             res = analyze_interest_rate_sensitivity(
                 age=age,
-                gender=gender,
                 term=term,
                 sum_assured=sum_assured,
                 improvement_rate=improvement_rate,
@@ -47,7 +46,7 @@ def sensitivity_tool(age: int, gender: str, term: int, sum_assured: float, inter
             )
             output = (
                 f"--- Interest Rate Sensitivity Analysis ---\n"
-                f"Client: Age {age}, {gender} | Term: {term} years\n"
+                f"Client: Age {age} | Term: {term} years\n"
                 f"Sum Assured: {format_currency(sum_assured)} | Mortality Improvement: {improvement_rate*100:.1f}%\n\n"
                 f"{'Interest Rate':<15} | {'Term LAP':<15} | {'Whole LAP':<15}\n"
                 f"-" * 51 + "\n"
@@ -62,7 +61,6 @@ def sensitivity_tool(age: int, gender: str, term: int, sum_assured: float, inter
         elif sensitivity_type.lower() == 'shock':
             res = analyze_mortality_shock_sensitivity(
                 age=age,
-                gender=gender,
                 term=term,
                 sum_assured=sum_assured,
                 interest_rate_pct=interest_rate,
@@ -70,7 +68,7 @@ def sensitivity_tool(age: int, gender: str, term: int, sum_assured: float, inter
             )
             output = (
                 f"--- Mortality Shock (Multiplier) Sensitivity Analysis ---\n"
-                f"Client: Age {age}, {gender} | Term: {term} years\n"
+                f"Client: Age {age} | Term: {term} years\n"
                 f"Sum Assured: {format_currency(sum_assured)} | Discount Rate: {interest_rate}%\n\n"
                 f"{'Mortality Multiplier':<20} | {'Term LAP':<15} | {'Whole LAP':<15}\n"
                 f"-" * 56 + "\n"

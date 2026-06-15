@@ -1,0 +1,16 @@
+{
+    "default_35": {
+        "age": 35,
+        "term": 20,
+        "sum_assured": 1000000,
+        "interest_rate": 6.0,
+        "improvement_rate": 0.01
+    },
+    "senior_60": {
+        "age": 60,
+        "term": 15,
+        "sum_assured": 500000,
+        "interest_rate": 5.5,
+        "improvement_rate": 0.005
+    }
+}

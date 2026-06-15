@@ -7,6 +7,7 @@ across different mortality improvement scenarios (0%, 0.5%, 1%, 2%).
 
 import os
 import sys
+# pyrefly: ignore [missing-import]
 from langchain_core.tools import tool
 
 # Add parent directory to path to support config/pricing imports
@@ -16,14 +17,13 @@ from actuarial.scenarios import compare_scenarios
 from actuarial.utils import format_currency
 
 @tool
-def scenario_tool(age: int, gender: str, term: int, sum_assured: float, interest_rate: float) -> str:
+def scenario_tool(age: int, term: int, sum_assured: float, interest_rate: float) -> str:
     """
     Compares premiums across various mortality improvement scenarios (0%, 0.5%, 1.0%, and 2.0%).
     Useful when asked to compare premium rates under different mortality assumptions.
     
     Inputs:
       - age (int): Entry age of policyholder
-      - gender (str): 'Male' or 'Female'
       - term (int): Policy term in years
       - sum_assured (float): The total claim payout value
       - interest_rate (float): The discount rate in percentage
@@ -35,7 +35,6 @@ def scenario_tool(age: int, gender: str, term: int, sum_assured: float, interest
         df_mort = load_raw_table()
         comparison = compare_scenarios(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate,
@@ -44,7 +43,7 @@ def scenario_tool(age: int, gender: str, term: int, sum_assured: float, interest
         
         output = (
             f"--- Mortality Improvement Scenario Comparison ---\n"
-            f"Client: Age {age}, {gender} | Sum Assured: {format_currency(sum_assured)}\n"
+            f"Client: Age {age} | Sum Assured: {format_currency(sum_assured)}\n"
             f"Policy Term: {term} years | Discount Rate: {interest_rate}%\n\n"
             f"{'Scenario':<12} | {'Term LAP':<12} | {'Term Savings':<15} | {'Whole LAP':<12} | {'Whole Savings':<15}\n"
             f"-" * 78 + "\n"

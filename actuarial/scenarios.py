@@ -14,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 from actuarial.pricing import calculate_all_pricing
 
-def compare_scenarios(age, gender, term, sum_assured, interest_rate_pct, df_mort, scenarios=None):
+def compare_scenarios(age, term, sum_assured, interest_rate_pct, df_mort, scenarios=None):
     """
     Evaluates pricing across different mortality improvement scenarios.
     Returns a list of dicts with comparison metrics.
@@ -34,7 +34,6 @@ def compare_scenarios(age, gender, term, sum_assured, interest_rate_pct, df_mort
             
     base_pricing = calculate_all_pricing(
         age=age,
-        gender=gender,
         term=term,
         sum_assured=sum_assured,
         interest_rate_pct=interest_rate_pct,
@@ -48,7 +47,6 @@ def compare_scenarios(age, gender, term, sum_assured, interest_rate_pct, df_mort
     for scenario_name, improvement_rate in scenarios.items():
         pricing = calculate_all_pricing(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate_pct,
@@ -81,9 +79,9 @@ def compare_scenarios(age, gender, term, sum_assured, interest_rate_pct, df_mort
         
     return results
 
-def get_scenarios_comparison_df(age, gender, term, sum_assured, interest_rate_pct, df_mort, scenarios=None):
+def get_scenarios_comparison_df(age, term, sum_assured, interest_rate_pct, df_mort, scenarios=None):
     """
     Returns the scenario comparison as a formatted pandas DataFrame.
     """
-    results = compare_scenarios(age, gender, term, sum_assured, interest_rate_pct, df_mort, scenarios)
+    results = compare_scenarios(age, term, sum_assured, interest_rate_pct, df_mort, scenarios)
     return pd.DataFrame(results)

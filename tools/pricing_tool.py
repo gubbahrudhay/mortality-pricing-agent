@@ -7,6 +7,7 @@ returning a formatted summary of Term and Whole Life premiums for a given client
 
 import os
 import sys
+# pyrefly: ignore [missing-import]
 from langchain_core.tools import tool
 
 # Add parent directory to path to support config/pricing imports
@@ -16,14 +17,13 @@ from actuarial.pricing import calculate_all_pricing
 from actuarial.utils import format_currency
 
 @tool
-def pricing_tool(age: int, gender: str, term: int, sum_assured: float, interest_rate: float, improvement_rate: float = 0.0) -> str:
+def pricing_tool(age: int, term: int, sum_assured: float, interest_rate: float, improvement_rate: float = 0.0) -> str:
     """
     Computes Term and Whole Life net premiums (Net Single Premium and Level Annual Premium) 
     for a specified client scenario.
     
     Inputs:
       - age (int): Entry age of policyholder (e.g. 35)
-      - gender (str): 'Male' or 'Female'
       - term (int): Policy term in years (e.g. 20)
       - sum_assured (float): The total claim payout value (e.g. 1000000)
       - interest_rate (float): The discount rate in percentage (e.g. 6.0 for 6%)
@@ -39,7 +39,6 @@ def pricing_tool(age: int, gender: str, term: int, sum_assured: float, interest_
         # Calculate pricing
         res = calculate_all_pricing(
             age=age,
-            gender=gender,
             term=term,
             sum_assured=sum_assured,
             interest_rate_pct=interest_rate,
@@ -49,7 +48,7 @@ def pricing_tool(age: int, gender: str, term: int, sum_assured: float, interest_
         
         output = (
             f"--- Actuarial Pricing Results ---\n"
-            f"Policyholder: Age {age}, {gender}\n"
+            f"Policyholder: Age {age}\n"
             f"Sum Assured: {format_currency(sum_assured)}\n"
             f"Policy Term: {term} years\n"
             f"Discount Rate: {interest_rate}%\n"

@@ -19,7 +19,6 @@ from tools.explanation_tool import explanation_tool
 def test_pricing_tool():
     res = pricing_tool.invoke({
         "age": 35,
-        "gender": "Male",
         "term": 20,
         "sum_assured": 1000000.0,
         "interest_rate": 6.0,
@@ -34,7 +33,6 @@ def test_pricing_tool():
 def test_scenario_tool():
     res = scenario_tool.invoke({
         "age": 35,
-        "gender": "Male",
         "term": 20,
         "sum_assured": 1000000.0,
         "interest_rate": 6.0
@@ -48,7 +46,6 @@ def test_sensitivity_tool():
     # Interest sensitivity
     res_int = sensitivity_tool.invoke({
         "age": 35,
-        "gender": "Male",
         "term": 20,
         "sum_assured": 1000000.0,
         "interest_rate": 6.0,
@@ -62,7 +59,6 @@ def test_sensitivity_tool():
     # Shock sensitivity
     res_shock = sensitivity_tool.invoke({
         "age": 35,
-        "gender": "Male",
         "term": 20,
         "sum_assured": 1000000.0,
         "interest_rate": 6.0,
@@ -76,7 +72,6 @@ def test_sensitivity_tool():
 def test_explanation_tool():
     res = explanation_tool.invoke({
         "age": 35,
-        "gender": "Male",
         "term": 20,
         "sum_assured": 1000000.0,
         "interest_rate": 6.0,

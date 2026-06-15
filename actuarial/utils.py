@@ -43,25 +43,15 @@ def load_pricing_scenarios_from_json(json_path="data/sample_inputs/pricing_scena
         else:
             # Create a default configuration structure
             default_scenarios = {
-                "default_male_35": {
+                "default_35": {
                     "age": 35,
-                    "gender": "Male",
                     "term": 20,
                     "sum_assured": 1000000,
                     "interest_rate": 6.0,
                     "improvement_rate": 0.01
                 },
-                "default_female_35": {
-                    "age": 35,
-                    "gender": "Female",
-                    "term": 20,
-                    "sum_assured": 1000000,
-                    "interest_rate": 6.0,
-                    "improvement_rate": 0.01
-                },
-                "senior_male_60": {
+                "senior_60": {
                     "age": 60,
-                    "gender": "Male",
                     "term": 15,
                     "sum_assured": 500000,
                     "interest_rate": 5.5,
