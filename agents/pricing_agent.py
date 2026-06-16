@@ -20,6 +20,7 @@ from tools.pricing_tool import pricing_tool
 from tools.scenario_tool import scenario_tool
 from tools.sensitivity_tool import sensitivity_tool
 from tools.explanation_tool import explanation_tool
+from tools.gross_premium_tool import gross_premium_tool
 
 # Load environment variables
 load_dotenv()
@@ -54,7 +55,13 @@ def get_pricing_agent(temperature=0.2, gemini_api_key=None):
     )
 
     # Collect tools
-    tools = [pricing_tool, scenario_tool, sensitivity_tool, explanation_tool]
+    tools = [
+        pricing_tool,
+        scenario_tool,
+        sensitivity_tool,
+        explanation_tool,
+        gross_premium_tool,
+    ]
 
     # Create the agent using the new unified API.
     # system_prompt replaces the old ChatPromptTemplate + MessagesPlaceholder setup.

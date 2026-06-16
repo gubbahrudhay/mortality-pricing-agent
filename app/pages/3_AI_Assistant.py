@@ -15,15 +15,12 @@ from agents.router import invoke_pricing_agent
 from dotenv import load_dotenv
 from app.theme import inject_theme
 
-
 # Load env variables
 load_dotenv()
 
-
-# -------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & STYLING
-# -------------------------------------------------------------------------
-
+# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="AI Actuarial Assistant",
     page_icon="💬",
@@ -32,362 +29,133 @@ st.set_page_config(
 
 inject_theme()
 
-
-
-# -------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # HEADER
-# -------------------------------------------------------------------------
-
+# -----------------------------------------------------------------------------
 st.markdown("""
 <div class="hero-dark" style="padding: 40px 50px;">
     <div class="hero-dark-content">
-        <div class="hero-dark-title" style="font-size: 1.7rem;">
-            💬 AI Actuarial Assistant
-        </div>
+        <div class="hero-dark-title" style="font-size: 1.7rem;">💬 AI Actuarial Assistant</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-
 st.markdown(
     "<p style='color:#6b7280; font-size:0.95rem; margin-top:18px;'>"
-    "Engage with an intelligent agent that leverages custom actuarial tools "
-    "to run pricing calculations, compare scenarios, evaluate sensitivity "
-    "curves, and generate comprehensive actuarial reports."
-    "</p>",
+    "Engage with an intelligent agent that leverages custom actuarial tools to run pricing calculations, "
+    "compare scenarios, evaluate sensitivity curves, and generate comprehensive actuarial reports.</p>",
     unsafe_allow_html=True
 )
 
+st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
 
-st.markdown(
-    '<hr class="glass-divider">',
-    unsafe_allow_html=True
-)
-
-
-
-# -------------------------------------------------------------------------
-# SESSION STATE
-# -------------------------------------------------------------------------
-
-if "messages" not in st.session_state:
-
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content":
-            "Hello! I am your AI Actuarial Consultant. "
-            "I can help you compute life premiums, model scenario adjustments, "
-            "perform sensitivity studies, and draft professional reports. "
-            "How can I assist you today?"
-        }
-    ]
-
-
-if "chat_history" not in st.session_state:
-
-    st.session_state.chat_history = []
-
-
-if "prompt_query" not in st.session_state:
-
-    st.session_state.prompt_query = None
-
-
-
-# -------------------------------------------------------------------------
-# SIDEBAR API KEY
-# -------------------------------------------------------------------------
-
+# -----------------------------------------------------------------------------
+# API KEY MANAGEMENT (SIDEBAR)
+# -----------------------------------------------------------------------------
 st.sidebar.title("🔑 Credentials")
 
-
 env_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+api_key_configured = bool(env_key)
 
-
-if env_key:
-
-    st.sidebar.success(
-        "✅ Gemini API Key detected in `.env` / environment."
-    )
-
+if api_key_configured:
+    st.sidebar.success("✅ Gemini API Key detected in `.env` / environment.")
     api_key_to_use = env_key
-
-
 else:
-
-    user_api_key = st.sidebar.text_input(
-        "Enter GEMINI_API_KEY:",
-        type="password"
-    )
-
-
+    user_api_key = st.sidebar.text_input("Enter GEMINI_API_KEY:", type="password")
     if user_api_key:
-
         api_key_to_use = user_api_key
-
-        st.sidebar.success(
-            "✅ Temporary API Key configured."
-        )
-
+        st.sidebar.success("✅ Temporary API Key configured.")
     else:
-
+        st.sidebar.warning("⚠️ Please configure GEMINI_API_KEY in `.env` or input it here to enable the agent.")
         api_key_to_use = None
 
-        st.sidebar.warning(
-            "⚠️ Please configure GEMINI_API_KEY in `.env` "
-            "or input it here to enable the agent."
-        )
-
-
-
-# -------------------------------------------------------------------------
-# SAMPLE PROMPTS
-# -------------------------------------------------------------------------
-
+# Sample prompts helper
 st.sidebar.markdown("### 💡 Try Asking:")
-
-
 sample_prompts = [
-
     "Compare premiums under 0%, 1%, and 2% mortality improvement.",
-
-    "Calculate term life premium for age 40 male, 20 year term, "
-    "sum assured 10 lakhs at 6% interest.",
-
-    "What happens to Whole Life premiums for a female age 30 "
-    "if we apply a 1.2x mortality shock?",
-
-    "Generate pricing report for a 45-year-old female, "
-    "15-year term, 20,00,000 sum assured."
-
+    "Calculate term life premium for age 40 male, 20 year term, sum assured 10 lakhs at 6% interest.",
+    "What happens to Whole Life premiums for a female age 30 if we apply a 1.2x mortality shock?",
+    "Generate pricing report for a 45-year-old female, 15-year term, 20,00,000 sum assured.",
+    "What is the gross premium and profit loading for a 40-year-old, 10-year term, sum assured 10 lakhs, at 4% interest rate?",
+    "How does 1% mortality improvement affect profit loading for a 35-year-old, 20-year term policy?",
+    "Calculate gross premium with 3% initial expense and 10% profit margin for age 50, 15-year term, sum assured 15 lakhs."
 ]
 
-
-for i, prompt in enumerate(sample_prompts):
-
-    if st.sidebar.button(
-        prompt,
-        key=f"prompt_{i}",
-        width="stretch"
-    ):
-
+for prompt in sample_prompts:
+    if st.sidebar.button(prompt, use_container_width=True):
         st.session_state.prompt_query = prompt
 
-        st.rerun()
+# -----------------------------------------------------------------------------
+# CONVERSATION SESSION STATE
+# -----------------------------------------------------------------------------
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": "Hello! I am your AI Actuarial Consultant. I can help you compute life premiums, "
+                   "model scenario adjustments, perform sensitivity studies, and draft professional reports. How can I assist you today?"
+    })
 
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-
-# -------------------------------------------------------------------------
-# CHAT HISTORY DISPLAY
-# -------------------------------------------------------------------------
-
+# Display conversation history
 for msg in st.session_state.messages:
-
     with st.chat_message(msg["role"]):
-
         st.markdown(msg["content"])
 
+# -----------------------------------------------------------------------------
+# CHAT INPUT — ALWAYS CALLED UNCONDITIONALLY (fixes disappearing input bug)
+# -----------------------------------------------------------------------------
+chat_input = st.chat_input("Type your question here...")
 
-
-# -------------------------------------------------------------------------
-# USER INPUT
-# -------------------------------------------------------------------------
-
+# Determine query: a sidebar sample-prompt click takes priority over a
+# fresh chat_input value, but chat_input is still always rendered above.
 user_query = None
-
-
-if st.session_state.prompt_query:
-
+if "prompt_query" in st.session_state and st.session_state.prompt_query:
     user_query = st.session_state.prompt_query
     st.session_state.prompt_query = None
-
-
-# Always keep chat box available
-chat_input = st.chat_input(
-    "Type your question here..."
-)
-
-
-if chat_input:
-
+elif chat_input:
     user_query = chat_input
 
-
-
-# -------------------------------------------------------------------------
-# AGENT EXECUTION
-# -------------------------------------------------------------------------
-
+# -----------------------------------------------------------------------------
+# EXECUTION
+# -----------------------------------------------------------------------------
 if user_query:
-
-
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": user_query
-        }
-    )
-
-
+    st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
-
         st.markdown(user_query)
 
-
-
     if not api_key_to_use:
-
-
-        error_message = (
-            "Please enter a valid **Gemini API Key** "
-            "in the sidebar or save it in your `.env` file."
-        )
-
-
         with st.chat_message("assistant"):
-
-            st.error(error_message)
-
-
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": error_message
-            }
-        )
-
-
-
+            err_msg = "Please enter a valid **Gemini API Key** in the sidebar or save it in your `.env` file to activate the AI assistant."
+            st.error(err_msg)
+            st.session_state.messages.append({"role": "assistant", "content": err_msg})
     else:
-
-
         with st.chat_message("assistant"):
-
-
-            with st.spinner(
-                "AI Consulting Agent is thinking and executing tools..."
-            ):
-
-
+            with st.spinner("AI Consulting Agent is thinking and executing tools..."):
                 response = invoke_pricing_agent(
-
                     query=user_query,
-
                     chat_history=st.session_state.chat_history,
-
                     gemini_api_key=api_key_to_use
-
                 )
 
-
-
-                # ---------------------------------------------------------
-                # TOOL EXECUTION LOGS
-                # ---------------------------------------------------------
-
-                steps = response.get(
-                    "intermediate_steps",
-                    []
-                )
-
-
+                steps = response.get('intermediate_steps', [])
                 if steps:
-
-
-                    with st.expander(
-                        "🛠️ Tool Executions & Actuarial reasoning trace",
-                        expanded=True
-                    ):
-
-
+                    with st.expander("🛠️ Tool Executions & Actuarial reasoning trace", expanded=True):
                         for tool_name, tool_args, observation in steps:
-
-
-                            st.markdown(
-                                f"**Action Called:** `{tool_name}`"
-                            )
-
-
-                            st.markdown(
-                                f"**Arguments:** `{tool_args}`"
-                            )
-
-
-                            st.text_area(
-                                "Result:",
-                                value=str(observation),
-                                height=150
-                            )
-
-
+                            st.markdown(f"**Action Called:** `{tool_name}`")
+                            st.markdown(f"**Arguments:** `{tool_args}`")
+                            st.text_area("Result:", value=str(observation), height=150)
                             st.markdown("---")
 
-
-
-                # ---------------------------------------------------------
-                # FIX GEMINI RESPONSE FORMAT
-                # ---------------------------------------------------------
-
-                raw_output = response.get(
-                    "output",
-                    "No response."
-                )
-
-
-                if isinstance(raw_output, list):
-
-                    final_output = ""
-
-                    for item in raw_output:
-
-                        if isinstance(item, dict):
-
-                            if "text" in item:
-
-                                final_output += item["text"]
-
-                        else:
-
-                            final_output += str(item)
-
-
-                else:
-
-                    final_output = str(raw_output)
-
-
-
-                # Display clean markdown response
-
+                final_output = response.get('output', 'No response.')
                 st.markdown(final_output)
 
+                st.session_state.messages.append({"role": "assistant", "content": final_output})
+                st.session_state.chat_history.append(("human", user_query))
+                st.session_state.chat_history.append(("ai", final_output))
 
-
-                # Save clean response
-
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": final_output
-                    }
-                )
-
-
-
-                # Update memory
-
-                st.session_state.chat_history.append(
-                    (
-                        "human",
-                        user_query
-                    )
-                )
-
-
-                st.session_state.chat_history.append(
-                    (
-                        "ai",
-                        final_output
-                    )
-                )
+    # Rerun so the new messages render in the normal history loop above
+    # the chat_input, keeping the input box anchored at the bottom.
+    st.rerun()

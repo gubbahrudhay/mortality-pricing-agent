@@ -57,8 +57,8 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.page_link(
-        "pages/1_Pricing_Calculator.py",
-        label="**Pricing Calculator**\n\nCompute Net Single Premiums (NSP) and Net Level Annual Premiums (LAP) for Term Life and Whole Life products, with interactive survival and mortality charts."
+        "pages/1_Net_Premium_Pricing.py",
+        label="**Net Premium Pricing**\n\nCompute Net Single Premiums (NSP) and Net Level Annual Premiums (LAP) for Term Life and Whole Life products, with interactive survival and mortality charts."
     )
 
 with col2:
@@ -75,9 +75,10 @@ with col3:
 
 with col4:
     st.page_link(
-        "pages/4_Gross_Premium_Agent.py",
-        label="**Gross Premium Agent**\n\nCalculate Gross Premium and Profit Loading with expense assumptions, and see how mortality improvement impacts profitability."
+        "pages/4_Gross_Premium_Pricing.py",
+        label="**Gross Premium Pricing**\n\nCalculate Gross Premium and Profit Loading with expense assumptions, and see how mortality improvement impacts profitability."
     )
+
 # -----------------------------------------------------------------------------
 # ARCHITECTURE & TEAM
 # -----------------------------------------------------------------------------
