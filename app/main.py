@@ -53,7 +53,7 @@ st.markdown('<div class="section-title">Explore the pricing, scenario, and AI as
 
 st.write("")
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.page_link(
@@ -73,6 +73,11 @@ with col3:
         label="**AI Actuarial Assistant**\n\nChat with a conversational agent that calculates premiums, runs scenarios, performs sensitivity analyses, and compiles formal reports."
     )
 
+with col4:
+    st.page_link(
+        "pages/4_Gross_Premium_Agent.py",
+        label="**Gross Premium Agent**\n\nCalculate Gross Premium and Profit Loading with expense assumptions, and see how mortality improvement impacts profitability."
+    )
 # -----------------------------------------------------------------------------
 # ARCHITECTURE & TEAM
 # -----------------------------------------------------------------------------
