@@ -1,8 +1,7 @@
 """
 Streamlit Main Page
 
-Landing page for the Mortality Pricing Suite — QDT-inspired: dark halftone
-hero, light intro band, dark indexed feature cards.
+Landing page for the Mortality Pricing Suite — QDT-inspired.
 """
 
 import streamlit as st
@@ -47,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# FEATURE CARDS (dark, dotted pattern)
+# FEATURE CARDS
 # -----------------------------------------------------------------------------
 st.markdown('<div class="section-tag">Application Features</div>', unsafe_allow_html=True)
 st.markdown('<div class="section-title">Explore the pricing, scenario, and AI assistant tools</div>', unsafe_allow_html=True)

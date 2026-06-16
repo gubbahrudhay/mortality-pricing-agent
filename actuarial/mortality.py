@@ -1,8 +1,9 @@
 """
 Actuarial Mortality Module
 
-This module handles loading the raw mortality table data, adjusting rates based on gender factors,
-and computing compound annual mortality improvement projections and survival probability curves.
+This module handles loading the raw mortality table data and computing
+compound annual mortality improvement projections and survival probability curves.
+Gender factor has been removed — single unified mortality table is used.
 """
 
 import os
@@ -10,17 +11,12 @@ import pandas as pd
 import numpy as np
 import sys
 
-# Add parent directory to path to support config imports when run as scripts
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
 
 def load_raw_table(csv_path="data/raw/mortality_table.csv"):
-    """
-    Loads the baseline mortality table from the specified CSV path.
-    """
     if not os.path.exists(csv_path):
-        # Fallback to local import if called from subdirectories
         resolved_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', csv_path))
         if os.path.exists(resolved_path):
             csv_path = resolved_path
@@ -29,40 +25,30 @@ def load_raw_table(csv_path="data/raw/mortality_table.csv"):
 
     df = pd.read_csv(csv_path)
 
-    # Ensure correct columns
     if 'Age' not in df.columns or 'qx' not in df.columns:
         raise ValueError("Mortality table must contain 'Age' and 'qx' columns.")
 
     return df
 
 
-def get_improved_mortality_rates(df_mort, gender, improvement_rate, gender_factors=None):
+def get_improved_mortality_rates(df_mort, improvement_rate, entry_age=None):
     """
-    Applies gender factor and annual compound mortality improvement to baseline qx rates.
-    qx_improved = qx_base * gender_factor * (1 - improvement_rate)
-
-    Builds a full age-indexed array (index = actual age) so that improved_rates[age]
-    correctly corresponds to that age, regardless of which starting age the source
-    CSV begins at.
+    Applies annual compound mortality improvement to baseline qx rates.
+    qx_improved = qx_base * (1 - improvement_rate)
+    Gender factor removed — single unified table used.
     """
-    if gender_factors is None:
-        gender_factors = config.GENDER_FACTORS
-
     ages = df_mort['Age'].values
     base_qx = df_mort['qx'].values
 
-    # Build a full array indexed 0..max_age by actual age
     max_age = int(ages.max())
     full_rates = np.zeros(max_age + 1)
     for a, q in zip(ages, base_qx):
         full_rates[int(a)] = q
 
-    # Fill ages below the table's minimum (e.g. 0, 1) with the smallest available rate
     min_age = int(ages.min())
     full_rates[:min_age] = base_qx[0]
 
-    gender_factor = gender_factors.get(gender, 1.0)
-    improved_rates = np.clip(full_rates * gender_factor * (1.0 - improvement_rate), 0.0, 1.0)
+    improved_rates = np.clip(full_rates * (1.0 - improvement_rate), 0.0, 1.0)
     return improved_rates
 
 
@@ -70,13 +56,13 @@ def get_survival_probabilities(improved_rates, age, term):
     """
     Computes survival probability (tpx) for each policy year t.
     tpx = product_{s=0}^{t-1} (1 - q_{x+s})
-    Returns a numpy array of length term + 1, where index t corresponds to survival prob at age + t.
+    Returns a numpy array of length term + 1.
     """
     max_periods = len(improved_rates) - age
     n = min(term, max_periods - 1)
 
     tpx = np.zeros(n + 1)
-    tpx[0] = 1.0  # Probability of surviving 0 years is 1.0
+    tpx[0] = 1.0
 
     for t in range(1, n + 1):
         tpx[t] = tpx[t - 1] * (1.0 - improved_rates[age + t - 1])
@@ -85,6 +71,5 @@ def get_survival_probabilities(improved_rates, age, term):
 
 
 if __name__ == "__main__":
-    # Test execution
     df = load_raw_table()
     print(f"Loaded {len(df)} rows from raw table successfully.")

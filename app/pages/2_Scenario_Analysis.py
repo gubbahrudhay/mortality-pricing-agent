@@ -1,12 +1,11 @@
 """
 Streamlit Page: Scenario Analysis
-This page evaluates scenario comparisons and plots sensitivity curves for discount rates and mortality shocks.
 """
+
 import streamlit as st
 import os
 import sys
 
-# Add parent directory to path to support config/pricing imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import config
@@ -19,21 +18,10 @@ from app.components.tables import render_scenario_table
 from analytics.insights import generate_sensitivity_insights
 from app.theme import inject_theme
 
-# -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & STYLING
-# -----------------------------------------------------------------------------
-st.set_page_config(
-    page_title="Scenario & Sensitivity Analysis",
-    page_icon="📈",
-    layout="wide"
-)
-
+st.set_page_config(page_title="Scenario & Sensitivity Analysis", page_icon="📈", layout="wide")
 inject_theme()
 
-# Load raw mortality table
 df_mort = load_raw_table()
-
-# Render inputs in sidebar
 inputs = render_sidebar_inputs()
 
 # -----------------------------------------------------------------------------
@@ -96,7 +84,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Perform analyses
 int_sensitivity = analyze_interest_rate_sensitivity(
     age=inputs['age'],
     term=inputs['term'],
