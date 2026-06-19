@@ -1,9 +1,10 @@
 """
 Gross Premium Sensitivity Analysis
-
 Analyzes the impact of mortality improvement rates on Gross Premium
 and Profit Loading: "look at the impact of mortality improvement on
 gross premium and profit loadings at different mortality improvement rates."
+
+Supports both Term Life and Whole Life via the product_type parameter.
 """
 
 import os
@@ -20,16 +21,19 @@ def analyze_gross_premium_mortality_sensitivity(
     sum_assured,
     interest_rate_pct,
     df_mort,
-    improvement_rates=(0.0, 0.01, 0.02, 0.03),
+    improvement_rates=(0.0, 0.005, 0.01, 0.015),
     initial_expense_pct=0.02,
     renewal_expense=500,
     contingency_pct=0.02,
     profit_margin_pct=0.08,
+    product_type="term",
 ):
     """
     Runs calculate_gross_premium across a list of mortality improvement rates
     and returns a DataFrame comparing Net Premium, Gross Premium, and
     Profit Loading at each rate, plus % change vs the 0% baseline.
+
+    product_type: "term" (default) or "whole".
     """
     rows = []
     for rate in improvement_rates:
@@ -44,6 +48,7 @@ def analyze_gross_premium_mortality_sensitivity(
             renewal_expense=renewal_expense,
             contingency_pct=contingency_pct,
             profit_margin_pct=profit_margin_pct,
+            product_type=product_type,
         )
         rows.append({
             "Improvement Rate": f"{rate:.1%}",
@@ -53,25 +58,28 @@ def analyze_gross_premium_mortality_sensitivity(
             "Profit Loading ($)": round(result["profit_loading"], 2),
             "Profit Loading (% of NP)": f"{result['profit_loading_pct_of_np']:.2%}",
         })
-
     df = pd.DataFrame(rows)
-
     base_gp = df.loc[df["Improvement Rate"] == "0.0%", "Gross Premium"].values[0]
     base_pl = df.loc[df["Improvement Rate"] == "0.0%", "Profit Loading ($)"].values[0]
     df["Gross Premium Δ vs Base"] = df["Gross Premium"].apply(lambda x: f"{(x - base_gp) / base_gp:+.2%}")
     df["Profit Loading Δ vs Base"] = df["Profit Loading ($)"].apply(lambda x: f"{(x - base_pl) / base_pl:+.2%}")
-
     return df
 
 
 if __name__ == "__main__":
     from actuarial.mortality import load_raw_table
     df_mort = load_raw_table()
+
+    print("--- TERM LIFE ---")
     df = analyze_gross_premium_mortality_sensitivity(
-        age=40,
-        term=10,
-        sum_assured=1_000_000,
-        interest_rate_pct=4.0,
-        df_mort=df_mort,
+        age=40, term=10, sum_assured=1_000_000, interest_rate_pct=4.0,
+        df_mort=df_mort, product_type="term",
+    )
+    print(df.to_string(index=False))
+
+    print("\n--- WHOLE LIFE ---")
+    df = analyze_gross_premium_mortality_sensitivity(
+        age=40, term=10, sum_assured=1_000_000, interest_rate_pct=4.0,
+        df_mort=df_mort, product_type="whole",
     )
     print(df.to_string(index=False))

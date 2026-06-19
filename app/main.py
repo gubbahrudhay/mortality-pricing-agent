@@ -105,9 +105,11 @@ with team_col:
     st.markdown("""
     <div class="team-block">
     <p style="font-size:0.95rem; line-height:1.9; margin-top:12px;">
-    <strong>AI Assistant / Agent</strong> &mdash; conversational AI, tool calling, and report generation.<br><br>
-    <strong>Teammate 2 (Actuarial)</strong> &mdash; life table formulas, compound improvement projections, premium calculations.<br><br>
-    <strong>Teammate 3 (Analytics)</strong> &mdash; sensitivity engines, visualizations, data-driven insights.
+    <strong>Teammate 1</strong> &mdash; conversational AI, tool calling, and report generation.<br><br>
+    <strong>Teammate 2</strong> &mdash; life table formulas, compound improvement projections, premium  calculations.<br><br>
+    <strong>Teammate 3</strong> &mdash; sensitivity engines, visualizations, data-driven insights.
+    </p>
+    <strong>Teammate 4</strong> &mdash; ui design and data collection.
     </p>
     </div>
     """, unsafe_allow_html=True)
