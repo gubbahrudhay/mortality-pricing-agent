@@ -53,7 +53,7 @@ st.markdown('<div class="section-title">Explore the pricing, scenario, and AI as
 
 st.write("")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     st.page_link(
@@ -77,6 +77,12 @@ with col4:
     st.page_link(
         "pages/4_Gross_Premium_Pricing.py",
         label="**Gross Premium Pricing**\n\nCalculate Gross Premium and Profit Loading with expense assumptions, and see how mortality improvement impacts profitability."
+    )
+
+with col5:
+    st.page_link(
+        "pages/5_Reserving.py",
+        label="**Reserving**\n\nCompute the Prospective Gross Premium Reserve at any policy duration, and visualize the reserve build-up and run-off curve."
     )
 
 # -----------------------------------------------------------------------------
@@ -105,11 +111,9 @@ with team_col:
     st.markdown("""
     <div class="team-block">
     <p style="font-size:0.95rem; line-height:1.9; margin-top:12px;">
-    <strong>Teammate 1</strong> &mdash; conversational AI, tool calling, and report generation.<br><br>
-    <strong>Teammate 2</strong> &mdash; life table formulas, compound improvement projections, premium  calculations.<br><br>
-    <strong>Teammate 3</strong> &mdash; sensitivity engines, visualizations, data-driven insights.
-    </p>
-    <strong>Teammate 4</strong> &mdash; ui design and data collection.
+    <strong>AI Assistant / Agent</strong> &mdash; conversational AI, tool calling, and report generation.<br><br>
+    <strong>Teammate 2 (Actuarial)</strong> &mdash; life table formulas, compound improvement projections, premium calculations.<br><br>
+    <strong>Teammate 3 (Analytics)</strong> &mdash; sensitivity engines, visualizations, data-driven insights.
     </p>
     </div>
     """, unsafe_allow_html=True)

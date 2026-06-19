@@ -9,7 +9,6 @@ import os
 import sys
 from dotenv import load_dotenv
 
-# Add parent directory to path to support config/pricing imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -21,11 +20,10 @@ from tools.scenario_tool import scenario_tool
 from tools.sensitivity_tool import sensitivity_tool
 from tools.explanation_tool import explanation_tool
 from tools.gross_premium_tool import gross_premium_tool
+from tools.reserving_tool import reserving_tool
 
-# Load environment variables
 load_dotenv()
 
-# Make sure GOOGLE_API_KEY is mapped from GEMINI_API_KEY if needed
 if "GEMINI_API_KEY" in os.environ and "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
 
@@ -47,24 +45,21 @@ def get_pricing_agent(temperature=0.2, gemini_api_key=None):
             "in your .env file or environment variables."
         )
 
-    # Set model to gemini-2.5-flash
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=api_key,
         temperature=temperature
     )
 
-    # Collect tools
     tools = [
         pricing_tool,
         scenario_tool,
         sensitivity_tool,
         explanation_tool,
         gross_premium_tool,
+        reserving_tool,
     ]
 
-    # Create the agent using the new unified API.
-    # system_prompt replaces the old ChatPromptTemplate + MessagesPlaceholder setup.
     agent = create_agent(
         model=llm,
         tools=tools,
