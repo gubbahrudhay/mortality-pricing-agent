@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import create_agent
+from langgraph.prebuilt import create_react_agent
 
 from agents.prompts import SYSTEM_PROMPT
 from tools.pricing_tool import pricing_tool
@@ -60,10 +60,10 @@ def get_pricing_agent(temperature=0.2, gemini_api_key=None):
         reserving_tool,
     ]
 
-    agent = create_agent(
+    agent = create_react_agent(
         model=llm,
         tools=tools,
-        system_prompt=SYSTEM_PROMPT,
+        prompt=SYSTEM_PROMPT,
     )
 
     return agent
