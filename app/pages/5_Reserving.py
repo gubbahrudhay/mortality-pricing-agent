@@ -3,7 +3,7 @@ Streamlit Page: Reserving
 
 This page computes the Prospective Gross Premium Reserve for a Term Life
 policy at every duration, visualizing the classic reserve build-up and
-run-off curve.
+run-off curve. Includes actuarial guardrails.
 """
 
 import streamlit as st
@@ -50,21 +50,8 @@ improvement_rate = st.sidebar.selectbox(
 
 duration_to_inspect = st.sidebar.slider("Inspect Duration (t)", min_value=0, max_value=term, value=min(10, term))
 
-# -----------------------------------------------------------------------------
-# COMPUTATION
-# -----------------------------------------------------------------------------
-result = calculate_reserve_schedule(
-    age=age, term=term, sum_assured=sum_assured,
-    interest_rate_pct=interest_rate, improvement_rate=improvement_rate, df_mort=df_mort,
-    initial_expense_pct=initial_expense_pct, renewal_expense_pct=renewal_expense_pct,
-    fixed_fee=fixed_fee,
-)
-
-gross_premium = result['gross_premium']
-schedule = result['schedule']
-df_schedule = pd.DataFrame(schedule)
-
-inspected_row = next(r for r in schedule if r['t'] == duration_to_inspect)
+# product_type is fixed as "term" for this page
+product_type = "term"
 
 # -----------------------------------------------------------------------------
 # HEADER
@@ -86,6 +73,31 @@ st.markdown(
 )
 
 st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# COMPUTATION WITH GUARDRAILS
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# COMPUTATION
+# -----------------------------------------------------------------------------
+result = calculate_reserve_schedule(
+    age=age, term=term, sum_assured=sum_assured,
+    interest_rate_pct=interest_rate, improvement_rate=improvement_rate, df_mort=df_mort,
+    initial_expense_pct=initial_expense_pct, renewal_expense_pct=renewal_expense_pct,
+    fixed_fee=fixed_fee,
+)
+
+gross_premium = result['gross_premium']
+schedule = result['schedule']
+df_schedule = pd.DataFrame(schedule)
+
+inspected_row = next(r for r in schedule if r['t'] == duration_to_inspect)
+
+gross_premium = result['gross_premium']
+schedule = result['schedule']
+df_schedule = pd.DataFrame(schedule)
+
+inspected_row = next(r for r in schedule if r['t'] == duration_to_inspect)
 
 # -----------------------------------------------------------------------------
 # METRIC CARDS

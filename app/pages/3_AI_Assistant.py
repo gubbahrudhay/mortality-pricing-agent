@@ -12,11 +12,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from agents.router import invoke_pricing_agent
-from dotenv import load_dotenv
 from app.theme import inject_theme
 
-# Load env variables
-load_dotenv()
 
 # -----------------------------------------------------------------------------
 # PAGE CONFIGURATION & STYLING
@@ -54,20 +51,21 @@ st.markdown('<hr class="glass-divider">', unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 st.sidebar.title("🔑 Credentials")
 
-env_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-api_key_configured = bool(env_key)
-
-if api_key_configured:
-    st.sidebar.success("✅ Gemini API Key detected in `.env` / environment.")
-    api_key_to_use = env_key
+user_api_key = st.sidebar.text_input(
+    "Enter your Gemini API Key:",
+    type="password",
+    placeholder="AIza...",
+    help="Get a free key at https://aistudio.google.com/app/apikey"
+)
+if user_api_key:
+    api_key_to_use = user_api_key
+    st.sidebar.success("✅ API Key configured.")
 else:
-    user_api_key = st.sidebar.text_input("Enter GEMINI_API_KEY:", type="password")
-    if user_api_key:
-        api_key_to_use = user_api_key
-        st.sidebar.success("✅ Temporary API Key configured.")
-    else:
-        st.sidebar.warning("⚠️ Please configure GEMINI_API_KEY in `.env` or input it here to enable the agent.")
-        api_key_to_use = None
+    st.sidebar.info(
+        "Enter your Gemini API Key above to activate the assistant.\n\n"
+        "Get a free key at [aistudio.google.com](https://aistudio.google.com/app/apikey)"
+    )
+    api_key_to_use = None
 
 # Sample prompts helper
 st.sidebar.markdown("### 💡 Try Asking:")
